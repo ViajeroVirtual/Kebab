@@ -1,0 +1,22 @@
+{
+  "name": "algekebab",
+  "version": "1.0.0",
+  "description": "App para puntuar kebabs en Algeciras con amigos",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "server": "node server/index.js",
+    "client": "npm.cmd --prefix client run dev",
+    "dev": "npm.cmd --prefix client run dev",
+    "build": "npm.cmd --prefix client install && npm.cmd --prefix client run build"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.13.1"
+  }
+}
