@@ -1,24 +1,24 @@
+import React from 'react';
+import { BRAND_CONFIG } from '../utils/formula';
+
 const sizeMap = {
-  sm: { heading: 'text-xl', subtitle: 'text-[10px]', tracking: 'tracking-tight' },
-  md: { heading: 'text-3xl', subtitle: 'text-xs', tracking: 'tracking-tight' },
-  lg: { heading: 'text-5xl', subtitle: 'text-sm', tracking: 'tracking-tight' },
+  sm: { heading: 'text-xl', badge: 'text-xs', gap: 'gap-1.5' },
+  md: { heading: 'text-2xl sm:text-3xl', badge: 'text-xs', gap: 'gap-2' },
+  lg: { heading: 'text-4xl sm:text-6xl', badge: 'text-xs sm:text-sm', gap: 'gap-3' },
 };
 
-export default function Logo({ size = 'md', showText = true }) {
+export default function Logo({ size = 'md', showBadge = true, centered = false }) {
   const s = sizeMap[size] || sizeMap.md;
 
   return (
-    <div className="flex flex-col items-start select-none">
-      <h1 className={`${s.heading} ${s.tracking} font-semibold leading-none`}>
-        <span style={{ color: '#1d1d1f' }}>Alge</span>
-        <span style={{ color: '#dc2626' }}>Kebab</span>
-      </h1>
-      {showText && (
-        <span
-          className={`${s.subtitle} font-medium uppercase tracking-widest mt-0.5`}
-          style={{ color: '#86868b' }}
-        >
-          Algeciras
+    <div className={`inline-flex items-center ${s.gap} select-none ${centered ? 'justify-center' : ''}`}>
+      <span className={`${s.heading} font-extrabold tracking-tight leading-none text-ink`}>
+        {BRAND_CONFIG.prefix}
+        <span className="text-brand-600">{BRAND_CONFIG.accent}</span>
+      </span>
+      {showBadge && (
+        <span className={`${s.badge} font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200/60`}>
+          {BRAND_CONFIG.city}
         </span>
       )}
     </div>

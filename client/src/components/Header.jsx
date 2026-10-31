@@ -1,57 +1,68 @@
 import React from 'react';
 import Logo from './Logo';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, PlusCircle, Settings, User } from 'lucide-react';
+import { LogIn, Plus, SlidersHorizontal, User } from 'lucide-react';
 
-const Header = ({ onOpenFormula, onOpenAddKebab, onOpenProfile, onOpenAuth }) => {
+export default function Header({ onOpenFormula, onOpenAddKebab, onOpenProfile, onOpenAuth }) {
   const { user } = useAuth();
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+    <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-neutral-200/70 transition-all">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
-          <Logo size="md" />
+          <a href="#top" className="focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 rounded-lg">
+            <Logo size="md"/>
+          </a>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <nav className="flex items-center gap-2 sm:gap-2.5" aria-label="Navegación principal">
             <button
+              type="button"
               onClick={onOpenFormula}
-              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-[#86868b] hover:text-[#1d1d1f] transition-colors rounded-lg hover:bg-gray-50"
+              className="inline-flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-medium text-ink-muted hover:text-ink hover:bg-neutral-100/80 rounded-xl transition-colors"
             >
-              <Settings size={16} />
-              <span className="hidden sm:inline">Criterios</span>
+              <SlidersHorizontal className="w-4 h-4 text-brand-600"/>
+              <span>Fórmula</span>
             </button>
 
             {user && (
               <button
+                type="button"
                 onClick={onOpenAddKebab}
-                className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-[#dc2626] hover:bg-[#b91c1c] transition-colors rounded-lg"
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 active:scale-[0.99] rounded-xl shadow-sm transition-all"
               >
-                <PlusCircle size={16} />
-                <span className="hidden sm:inline">Nuevo Kebab</span>
+                <Plus className="w-4 h-4"/>
+                <span className="hidden sm:inline">Añadir Local</span>
               </button>
             )}
 
             {user ? (
               <button
+                type="button"
                 onClick={onOpenProfile}
-                className="flex items-center justify-center w-9 h-9 rounded-full bg-[#dc2626] text-white text-sm font-semibold hover:bg-[#b91c1c] transition-colors"
+                aria-label="Abrir perfil de usuario"
+                className="inline-flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-neutral-100 hover:bg-neutral-200/80 text-ink text-xs sm:text-sm font-semibold transition-colors"
               >
-                {user.username ? user.username.charAt(0).toUpperCase() : <User size={16} />}
+                <span
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold uppercase shadow-sm"
+                  style={{ backgroundColor: user.avatar_color || '#DC2626' }}
+                >
+                  {user.username ? user.username.charAt(0) : <User className="w-3.5 h-3.5"/>}
+                </span>
+                <span className="hidden md:inline max-w-[110px] truncate">{user.username}</span>
               </button>
             ) : (
               <button
+                type="button"
                 onClick={onOpenAuth}
-                className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-[#dc2626] border border-[#dc2626]/30 hover:border-[#dc2626] hover:bg-red-50 transition-colors rounded-lg"
+                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs sm:text-sm font-semibold text-ink bg-neutral-100 hover:bg-neutral-200/80 rounded-xl transition-colors"
               >
-                <LogIn size={16} />
-                <span>Entrar</span>
+                <LogIn className="w-4 h-4 text-brand-600"/>
+                <span>Acceder</span>
               </button>
             )}
-          </div>
+          </nav>
         </div>
       </div>
     </header>
   );
-};
-
-export default Header;
+}

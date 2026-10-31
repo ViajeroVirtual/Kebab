@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Plus, MapPin, Store, AlertCircle } from 'lucide-react';
 
 const COMMON_ZONES = [
@@ -20,10 +20,22 @@ export default function AddKebabModal({ onClose, onAdd }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!name.trim()) {
-      setError('Introduce el nombre del kebab');
+      setError('Introduce el nombre comercial del establecimiento');
       return;
     }
 
@@ -40,73 +52,76 @@ export default function AddKebabModal({ onClose, onAdd }) {
       });
       onClose();
     } catch (err) {
-      setError(err.message || 'Error al añadir el kebab');
+      setError(err.message || 'Error al registrar el local');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div 
-        className="relative w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden"
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-md bg-white rounded-2xl shadow-modal overflow-hidden animate-modal-in"
         onClick={(e) => e.stopPropagation()}
       >
-        
-        {/* Header */}
-        <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-white">
+        <div className="p-5 sm:p-6 border-b border-neutral-100 flex items-center justify-between">
           <div>
-            <h3 className="text-base font-semibold text-gray-900">
-              Añadir Nuevo Kebab en Algeciras
+            <h3 className="text-base font-extrabold text-ink">
+              Añadir Establecimiento
             </h3>
-            <p className="text-[11px] text-gray-500 mt-0.5">
-              Registra un local para que el grupo pueda empezar a puntuarlo
+            <p className="text-xs text-ink-muted mt-0.5">
+              Incorpora un nuevo local al directorio público de Algeciras
             </p>
           </div>
 
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            aria-label="Cerrar"
+            className="p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-neutral-100 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5"/>
           </button>
         </div>
 
-        {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
-          
+        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4">
           {error && (
-            <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-xs text-red-600 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
+            <div className="p-3.5 rounded-xl bg-brand-50 border border-brand-200 text-xs font-semibold text-brand-700 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0"/>
               <span>{error}</span>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium uppercase tracking-wider text-gray-500 mb-1.5">
-              Nombre del Kebab *
+            <label className="block text-xs font-bold uppercase tracking-wider text-ink-muted mb-1.5">
+              Nombre del Local *
             </label>
             <div className="relative">
-              <Store className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Store className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted"/>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Ej: Kebab La Isla, Dchiqui..."
-                className="w-full pl-9 pr-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-red-500 transition-colors"
+                placeholder="Ej: Kebab Dchiqui, La Isla..."
+                className="w-full pl-10 pr-4 py-2.5 text-sm bg-surface border border-neutral-200 rounded-xl text-ink focus:outline-none focus:bg-white focus:border-brand-600 transition-all"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium uppercase tracking-wider text-gray-500 mb-1.5">
-              Zona de Algeciras *
+            <label className="block text-xs font-bold uppercase tracking-wider text-ink-muted mb-1.5">
+              Zona en Algeciras *
             </label>
             <select
               value={zone}
               onChange={(e) => setZone(e.target.value)}
-              className="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-red-500 transition-colors"
+              className="w-full px-3.5 py-2.5 text-sm bg-surface border border-neutral-200 rounded-xl text-ink focus:outline-none focus:bg-white focus:border-brand-600 transition-all"
             >
               {COMMON_ZONES.map(z => (
                 <option key={z} value={z}>{z}</option>
@@ -115,39 +130,52 @@ export default function AddKebabModal({ onClose, onAdd }) {
           </div>
 
           <div>
-            <label className="block text-xs font-medium uppercase tracking-wider text-gray-500 mb-1.5">
-              Dirección o Calle
+            <label className="block text-xs font-bold uppercase tracking-wider text-ink-muted mb-1.5">
+              Dirección
             </label>
             <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted"/>
               <input
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="Ej: Calle Sindicalista Luis Cobos, Av. Virgen del Carmen..."
-                className="w-full pl-9 pr-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-red-500 transition-colors"
+                placeholder="Ej: Av. Virgen del Carmen, 29"
+                className="w-full pl-10 pr-4 py-2.5 text-sm bg-surface border border-neutral-200 rounded-xl text-ink focus:outline-none focus:bg-white focus:border-brand-600 transition-all"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium uppercase tracking-wider text-gray-500 mb-1.5">
-              Descripción o especialidad (opcional)
+            <label className="block text-xs font-bold uppercase tracking-wider text-ink-muted mb-1.5">
+              Especialidad o descripción
             </label>
             <textarea
               rows="2"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Ej: Famoso por sus salsas caseras, abre hasta tarde..."
-              className="w-full px-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-red-500 transition-colors resize-none"
+              placeholder="Ej: Destaca por sus salsas caseras y pan recién horneado..."
+              className="w-full px-3.5 py-2.5 text-sm bg-surface border border-neutral-200 rounded-xl text-ink focus:outline-none focus:bg-white focus:border-brand-600 transition-all resize-none"
             />
           </div>
 
-          <div className="pt-2 flex items-center justify-end gap-3 border-t border-gray-100">
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-ink-muted mb-1.5">
+              Enlace a Google Maps (opcional)
+            </label>
+            <input
+              type="url"
+              value={googleMapsUrl}
+              onChange={(e) => setGoogleMapsUrl(e.target.value)}
+              placeholder="https://maps.google.com/?q=..."
+              className="w-full px-3.5 py-2.5 text-sm bg-surface border border-neutral-200 rounded-xl text-ink focus:outline-none focus:bg-white focus:border-brand-600 transition-all"
+            />
+          </div>
+
+          <div className="pt-3 flex items-center justify-end gap-3 border-t border-neutral-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+              className="px-4 py-2 rounded-xl text-xs font-semibold text-ink-muted hover:text-ink hover:bg-neutral-100 transition-colors"
             >
               Cancelar
             </button>
@@ -155,15 +183,13 @@ export default function AddKebabModal({ onClose, onAdd }) {
             <button
               type="submit"
               disabled={loading}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 shadow-sm disabled:opacity-50 transition-colors"
             >
-              <Plus className="w-4 h-4" />
-              <span>{loading ? 'Añadiendo...' : 'Añadir a la Ruta'}</span>
+              <Plus className="w-4 h-4"/>
+              <span>{loading ? 'Guardando...' : 'Publicar Local'}</span>
             </button>
           </div>
-
         </form>
-
       </div>
     </div>
   );

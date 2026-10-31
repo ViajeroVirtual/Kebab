@@ -1,126 +1,163 @@
 import React from 'react';
-import { MapPin, Star, Navigation, ChevronRight } from 'lucide-react';
+import { MapPin, Star, Navigation, Edit3, MessageSquare } from 'lucide-react';
 import { getScoreBadgeColor } from '../utils/formula';
 
 export default function KebabCard({ kebab, rank, onClick, onRateClick, currentUserId }) {
   const userRating = kebab.ratings?.find(r => r.user_id === currentUserId);
+  const ratingsCount = kebab.ratings?.length || 0;
 
   const mapsUrl =
     kebab.google_maps_url ||
     `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(kebab.name + ' ' + kebab.address + ' Algeciras')}`;
 
+  const getRankBadgeStyle = (position) => {
+    if (position === 1) return 'bg-amber-400 text-ink border-amber-300 shadow-sm';
+    if (position === 2) return 'bg-neutral-200 text-ink border-neutral-300 shadow-sm';
+    if (position === 3) return 'bg-amber-700 text-white border-amber-600 shadow-sm';
+    return 'bg-ink/80 text-white backdrop-blur-md border-white/15';
+  };
+
   return (
-    <div
+    <article
       onClick={onClick}
-      className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden transition-all duration-300 cursor-pointer hover:shadow-lg flex flex-col justify-between"
+      className="group relative bg-white border border-neutral-200/80 rounded-2xl overflow-hidden shadow-card hover:shadow-card-hover hover:-translate-y-0.5 transition-all duration-300 cursor-pointer flex flex-col justify-between"
     >
       <div>
-        {/* Kebab Image */}
-        <div className="h-48 w-full relative overflow-hidden">
+        {/* Media Header */}
+        <div className="h-48 w-full relative overflow-hidden bg-neutral-100">
           {kebab.image_url ? (
             <img
               src={kebab.image_url}
               alt={kebab.name}
-              className="w-full h-full object-cover rounded-t-2xl group-hover:scale-[1.03] transition-transform duration-500"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
               loading="lazy"
             />
           ) : (
-            <div className="w-full h-full bg-gray-100 rounded-t-2xl flex items-center justify-center">
-              <span className="text-gray-300 text-4xl">🌯</span>
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="text-4xl" role="img" aria-label="Kebab">🌯</span>
             </div>
           )}
 
-          {/* Zone badge — bottom-left over image */}
-          <div className="absolute bottom-3 left-3 flex items-center gap-1.5 text-xs text-gray-600 font-medium px-3 py-1.5 rounded-full bg-white/80 backdrop-blur-sm">
-            <MapPin className="w-3.5 h-3.5 text-gray-500 shrink-0" />
-            <span className="truncate max-w-[180px]">{kebab.zone}</span>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/15 pointer-events-none" />
+
+          {/* Top Left: Rank Badge */}
+          {rank && (
+            <div
+              className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-extrabold tracking-tight border tabular-nums ${getRankBadgeStyle(rank)}`}
+            >
+              #{rank}
+            </div>
+          )}
+
+          {/* Top Right: Score Badge */}
+          <div
+            className={`absolute top-3 right-3 flex items-center gap-1 px-3 py-1 rounded-full text-sm font-bold tabular-nums ${getScoreBadgeColor(kebab.average_score)}`}
+          >
+            <Star className="w-3.5 h-3.5 fill-current"/>
+            <span>
+              {kebab.average_score !== null && kebab.average_score !== undefined
+                ? kebab.average_score.toFixed(1)
+                : 'Sin nota'}
+            </span>
           </div>
 
-          {/* Score badge — top-right over image */}
-          {kebab.average_score !== null && kebab.average_score !== undefined ? (
-            <div className="absolute top-3 right-3 flex items-center gap-1 px-3 py-1.5 rounded-full bg-red-600 text-white text-sm font-semibold shadow-sm">
-              <Star className="w-3.5 h-3.5 fill-current" />
-              <span>{kebab.average_score.toFixed(1)}</span>
-            </div>
-          ) : (
-            <div className="absolute top-3 right-3 flex items-center gap-1 px-3 py-1.5 rounded-full bg-gray-200 text-gray-400 text-sm font-medium">
-              <span>—</span>
-            </div>
-          )}
+          {/* Bottom Left: Zone Pill */}
+          <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
+            <span className="inline-flex items-center gap-1.5 text-xs text-ink font-semibold px-3 py-1 rounded-full bg-white/95 backdrop-blur-md shadow-sm truncate max-w-[75%]">
+              <MapPin className="w-3.5 h-3.5 text-brand-600 shrink-0"/>
+              <span className="truncate">{kebab.zone}</span>
+            </span>
+
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-white bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full tabular-nums">
+              <MessageSquare className="w-3 h-3"/>
+              <span>{ratingsCount}</span>
+            </span>
+          </div>
         </div>
 
-        {/* Info Content */}
+        {/* Body Content */}
         <div className="p-5">
-          <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">
+          <h2 className="text-lg font-bold text-ink group-hover:text-brand-600 transition-colors line-clamp-1">
             {kebab.name}
-          </h3>
+          </h2>
 
-          <p className="text-sm text-gray-500 line-clamp-1 mt-0.5">
+          <p className="text-xs font-medium text-ink-muted line-clamp-1 mt-1">
             {kebab.address}
           </p>
 
           {kebab.description && (
-            <p className="text-sm text-gray-600 line-clamp-2 mt-2 leading-relaxed">
+            <p className="text-sm text-ink-muted line-clamp-2 mt-2.5 leading-relaxed">
               {kebab.description}
             </p>
           )}
 
-          {/* Cómo llegar */}
-          <a
-            href={mapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={(e) => e.stopPropagation()}
-            className="inline-flex items-center gap-1.5 text-sm text-red-600 hover:text-red-700 font-medium mt-3 transition-colors"
-          >
-            <Navigation className="w-3.5 h-3.5" />
-            <span>Cómo llegar</span>
-          </a>
-
-          {/* Friend rating pills */}
-          <div className="border-t border-gray-50 pt-4 mt-4">
-            {kebab.ratings && kebab.ratings.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {kebab.ratings.map(r => (
+          {/* Community Rating Pills */}
+          <div className="border-t border-neutral-100 pt-3.5 mt-4">
+            {ratingsCount > 0 ? (
+              <div className="flex flex-wrap items-center gap-1.5">
+                {kebab.ratings.slice(0, 4).map(r => (
                   <div
                     key={r.id || r.user_id}
-                    className="flex items-center gap-1.5 pl-1.5 pr-2.5 py-1 rounded-full bg-gray-100 text-xs"
+                    className="inline-flex items-center gap-1.5 pl-1 pr-2.5 py-0.5 rounded-full bg-surface text-xs border border-neutral-200/60"
                   >
-                    <div
-                      className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold text-white uppercase"
-                      style={{ backgroundColor: r.avatar_color || '#dc2626' }}
+                    <span
+                      className="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold text-white uppercase shrink-0"
+                      style={{ backgroundColor: r.avatar_color || '#DC2626' }}
                     >
                       {r.username ? r.username.slice(0, 1) : '?'}
-                    </div>
-                    <span className="text-gray-700 font-medium">{r.username}</span>
-                    <span className="font-semibold text-gray-900">
+                    </span>
+                    <span className="text-ink font-medium truncate max-w-[75px]">{r.username}</span>
+                    <span className="font-bold text-ink tabular-nums">
                       {r.final_score ? parseFloat(r.final_score).toFixed(1) : '-'}
                     </span>
                   </div>
                 ))}
+                {ratingsCount > 4 && (
+                  <span className="text-xs font-semibold text-ink-muted px-2 py-0.5 rounded-full bg-surface">
+                    +{ratingsCount - 4} más
+                  </span>
+                )}
               </div>
             ) : (
-              <p className="text-xs text-gray-400">
-                Aún no hay valoraciones. ¡Sé el primero!
+              <p className="text-xs font-medium text-ink-muted">
+                Sé la primera persona en valorar este local.
               </p>
             )}
           </div>
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="px-5 pb-5 pt-2 flex items-center justify-between text-xs">
-        <span className="flex items-center gap-1 text-gray-400 group-hover:text-gray-600 font-medium transition-colors">
-          Ver detalles
-          <ChevronRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-        </span>
+      {/* Card Actions Footer */}
+      <div className="px-5 pb-4 pt-2 border-t border-neutral-100 flex items-center justify-between gap-2 bg-neutral-50/50">
+        <a
+          href={mapsUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-muted hover:text-ink py-1.5 px-2.5 rounded-lg hover:bg-neutral-200/60 transition-colors"
+        >
+          <Navigation className="w-3.5 h-3.5 text-brand-600"/>
+          <span>Cómo llegar</span>
+        </a>
 
-        {userRating && (
-          <span className="text-xs font-semibold text-red-600">
-            Tu nota: {parseFloat(userRating.final_score).toFixed(1)}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onRateClick(kebab);
+          }}
+          className={`inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
+            userRating
+              ? 'bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-200/60'
+              : 'bg-ink text-white hover:bg-brand-600 shadow-sm'
+          }`}
+        >
+          <Edit3 className="w-3.5 h-3.5"/>
+          <span className="tabular-nums">
+            {userRating ? `Tu nota: ${parseFloat(userRating.final_score).toFixed(1)}` : 'Valorar'}
           </span>
-        )}
+        </button>
       </div>
-    </div>
+    </article>
   );
 }

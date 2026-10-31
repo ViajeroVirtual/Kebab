@@ -4,11 +4,11 @@ import { CRITERIA_CONFIG, calculateFormulaScore, calculateContribution } from '.
 
 export default function RatingModal({ kebab, existingRating, onClose, onSave }) {
   const [scores, setScores] = useState({
-    kebab_score: 7.0,
+    kebab_score: 7.5,
     ubicacion_score: 8.0,
     atencion_score: 8.0,
-    calidad_precio_score: 7.0,
-    local_presentacion_score: 7.0
+    calidad_precio_score: 7.5,
+    local_presentacion_score: 7.5
   });
 
   const [comment, setComment] = useState('');
@@ -18,15 +18,27 @@ export default function RatingModal({ kebab, existingRating, onClose, onSave }) 
   useEffect(() => {
     if (existingRating) {
       setScores({
-        kebab_score: parseFloat(existingRating.kebab_score) || 7.0,
+        kebab_score: parseFloat(existingRating.kebab_score) || 7.5,
         ubicacion_score: parseFloat(existingRating.ubicacion_score) || 8.0,
         atencion_score: parseFloat(existingRating.atencion_score) || 8.0,
-        calidad_precio_score: parseFloat(existingRating.calidad_precio_score) || 7.0,
-        local_presentacion_score: parseFloat(existingRating.local_presentacion_score) || 7.0
+        calidad_precio_score: parseFloat(existingRating.calidad_precio_score) || 7.5,
+        local_presentacion_score: parseFloat(existingRating.local_presentacion_score) || 7.5
       });
       setComment(existingRating.comment || '');
     }
   }, [existingRating]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
 
   const liveFinalScore = calculateFormulaScore(scores);
 
@@ -58,97 +70,101 @@ export default function RatingModal({ kebab, existingRating, onClose, onSave }) 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-ink/50 backdrop-blur-sm"
       onClick={onClose}
     >
-      <div 
-        className="relative w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]"
+      <div
+        className="relative w-full max-w-lg bg-white rounded-2xl shadow-modal overflow-hidden flex flex-col max-h-[92vh] animate-modal-in"
         onClick={(e) => e.stopPropagation()}
       >
-        
         {/* Header */}
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-          <div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-red-600">
-              Valorar
+        <div className="p-5 sm:p-6 border-b border-neutral-100 flex items-center justify-between">
+          <div className="min-w-0">
+            <span className="text-xs font-bold uppercase tracking-wider text-brand-600">
+              Evaluación ponderada
             </span>
-            <h3 className="text-xl font-bold text-[#1d1d1f] line-clamp-1 mt-0.5">
+            <h3 className="text-lg sm:text-xl font-extrabold text-ink truncate mt-0.5">
               {kebab.name}
             </h3>
           </div>
 
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            aria-label="Cerrar"
+            className="p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-neutral-100 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5"/>
           </button>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto flex-1">
-          
-          {/* Live Score Preview */}
-          <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-between">
+        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-5 overflow-y-auto flex-1">
+          {/* Live Score Banner */}
+          <div className="p-4 rounded-2xl bg-surface border border-neutral-200/80 flex items-center justify-between gap-4">
             <div>
-              <span className="text-xs font-medium text-gray-600">Nota final calculada</span>
-              <p className="text-[11px] text-gray-400 mt-0.5">
-                Kebab (6 pts) + Ubicación (1) + Atención (1) + Precio (1) + Local (1)
+              <span className="text-xs font-bold uppercase tracking-wider text-ink-muted block">
+                Nota Final Calculada
+              </span>
+              <p className="text-xs text-ink-muted mt-0.5">
+                Sabor (60%) + 4 criterios complementarios (10% c/u)
               </p>
             </div>
 
-            <div className="px-4 py-2 rounded-xl bg-red-600 text-white flex items-center gap-1.5 text-2xl font-bold shadow-sm">
-              <Star className="w-5 h-5 fill-current" />
+            <div className="px-4 py-2 rounded-2xl bg-brand-600 text-white flex items-center gap-1.5 text-2xl font-extrabold shadow-sm tabular-nums shrink-0">
+              <Star className="w-5 h-5 fill-current"/>
               <span>{liveFinalScore.toFixed(1)}</span>
             </div>
           </div>
 
           {error && (
-            <div className="p-3.5 rounded-xl bg-red-50 border border-red-100 text-xs text-red-600 flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
+            <div className="p-3.5 rounded-xl bg-brand-50 border border-brand-200 text-xs font-medium text-brand-700 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0"/>
               <span>{error}</span>
             </div>
           )}
 
-          {/* Criteria Sliders */}
-          <div className="space-y-4">
+          {/* Sliders */}
+          <div className="space-y-3.5">
             {CRITERIA_CONFIG.map(crit => {
               const currentVal = scores[crit.id];
               const contrib = calculateContribution(currentVal, crit.maxPoints);
 
               return (
-                <div key={crit.id} className="p-4 rounded-xl bg-gray-50/70 border border-gray-200/80 space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-sm font-semibold text-[#1d1d1f]">{crit.label}</span>
-                      <span className="text-xs text-gray-400 ml-2">
-                        (hasta {crit.maxPoints} pts)
-                      </span>
-                    </div>
+                <div key={crit.id} className="p-4 rounded-2xl bg-surface/70 border border-neutral-200/70 space-y-2.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <label htmlFor={`slider-${crit.id}`} className="text-sm font-bold text-ink flex items-center gap-1.5">
+                      <span>{crit.icon}</span>
+                      <span>{crit.label}</span>
+                      <span className="text-xs font-medium text-ink-muted">({crit.percentage})</span>
+                    </label>
 
-                    <div className="text-sm font-bold text-red-600 px-2 py-0.5 rounded bg-white border border-gray-200 shadow-sm">
+                    <span className="text-sm font-extrabold text-brand-600 px-2.5 py-0.5 rounded-lg bg-white border border-neutral-200 shadow-sm tabular-nums">
                       {currentVal.toFixed(1)} / 10
-                    </div>
+                    </span>
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] text-gray-500">
-                    <span>{crit.description}</span>
-                    <span className="font-semibold text-gray-700">
-                      Suma: +{contrib.toFixed(2)} pts
+                  <div className="flex items-center justify-between text-xs text-ink-muted gap-2">
+                    <span className="line-clamp-1">{crit.description}</span>
+                    <span className="font-semibold text-ink shrink-0 tabular-nums">
+                      +{contrib.toFixed(2)} pts
                     </span>
                   </div>
 
                   <input
+                    id={`slider-${crit.id}`}
                     type="range"
                     min="0"
                     max="10"
                     step="0.1"
                     value={currentVal}
                     onChange={(e) => handleSliderChange(crit.id, e.target.value)}
-                    className="w-full cursor-pointer"
+                    className="w-full"
                   />
-                  
-                  <div className="flex justify-between text-[10px] text-gray-400">
+
+                  <div className="flex justify-between text-xs font-medium text-ink-muted tabular-nums">
                     <span>0</span>
                     <span>5</span>
                     <span>10</span>
@@ -160,24 +176,25 @@ export default function RatingModal({ kebab, existingRating, onClose, onSave }) 
 
           {/* Comment */}
           <div>
-            <label className="block text-xs font-medium uppercase tracking-wider text-gray-500 mb-1.5">
-              Comentario u opinión personal (opcional)
+            <label htmlFor="rating-comment" className="block text-xs font-bold uppercase tracking-wider text-ink-muted mb-1.5">
+              Tu reseña (opcional)
             </label>
             <textarea
+              id="rating-comment"
               rows="3"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="¿Qué tal el pan, la carne, las salsas o el trato?"
-              className="w-full px-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl text-[#1d1d1f] placeholder-gray-400 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/20 transition-all resize-none"
+              placeholder="¿Qué tal el tamaño del dürüm, el punto de la carne o las salsas?"
+              className="w-full px-4 py-2.5 text-sm bg-surface border border-neutral-200 rounded-xl text-ink placeholder-ink-muted/70 focus:outline-none focus:bg-white focus:border-brand-600 focus:ring-2 focus:ring-brand-600/15 transition-all resize-none"
             />
           </div>
 
-          {/* Footer Submit */}
-          <div className="pt-3 flex items-center justify-end gap-3 border-t border-gray-100">
+          {/* Submit */}
+          <div className="pt-3 flex items-center justify-end gap-3 border-t border-neutral-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+              className="px-4 py-2.5 rounded-xl text-sm font-semibold text-ink-muted hover:text-ink hover:bg-neutral-100 transition-colors"
             >
               Cancelar
             </button>
@@ -185,15 +202,13 @@ export default function RatingModal({ kebab, existingRating, onClose, onSave }) 
             <button
               type="submit"
               disabled={submitting}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 shadow-sm disabled:opacity-50 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 shadow-sm disabled:opacity-50 transition-all"
             >
-              <Save className="w-4 h-4" />
-              <span>{submitting ? 'Guardando...' : (existingRating ? 'Actualizar Nota' : 'Guardar Puntuación')}</span>
+              <Save className="w-4 h-4"/>
+              <span>{submitting ? 'Guardando...' : (existingRating ? 'Actualizar Nota' : 'Publicar Valoración')}</span>
             </button>
           </div>
-
         </form>
-
       </div>
     </div>
   );

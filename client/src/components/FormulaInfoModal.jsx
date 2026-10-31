@@ -1,95 +1,91 @@
-import React from 'react';
-import { X, Calculator, CheckCircle2 } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { X, Calculator } from 'lucide-react';
 import { CRITERIA_CONFIG } from '../utils/formula';
 
 export default function FormulaInfoModal({ onClose }) {
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.body.style.overflow = 'unset';
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div 
-        className="relative w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden"
+    <div
+      role="dialog"
+      aria-modal="true"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/50 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="relative w-full max-w-lg bg-white rounded-2xl shadow-modal overflow-hidden animate-modal-in"
         onClick={(e) => e.stopPropagation()}
       >
-        
-        {/* Header */}
-        <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-white">
+        <div className="p-5 sm:p-6 border-b border-neutral-100 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-red-50 text-red-600 border border-red-100">
-              <Calculator className="w-5 h-5" />
+            <div className="p-2.5 rounded-xl bg-brand-50 text-brand-600 border border-brand-200/60">
+              <Calculator className="w-5 h-5"/>
             </div>
             <div>
-              <h3 className="text-base font-semibold text-gray-900">
-                Fórmula Oficial del Grupo
+              <h3 className="text-base font-extrabold text-ink">
+                Algoritmo Oficial de Puntuación
               </h3>
-              <p className="text-[11px] text-gray-500 mt-0.5">
-                Puntuaciones de 0 a 10 con conversión automática
+              <p className="text-xs text-ink-muted mt-0.5">
+                Metodología transparente sobre 10 puntos
               </p>
             </div>
           </div>
 
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            aria-label="Cerrar"
+            className="p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-neutral-100 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5"/>
           </button>
         </div>
 
-        {/* Body */}
-        <div className="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
-          
-          <div className="p-3.5 rounded-xl bg-red-50 border border-red-100 text-xs text-red-700 leading-relaxed">
-            <strong>Fácil y sin decimales:</strong> Al votar ponéis una nota limpia del 0 al 10 en cada aspecto. El sistema hace el cálculo automático según los puntos máximos de cada categoría.
+        <div className="p-5 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+          <div className="p-4 rounded-2xl bg-brand-50/70 border border-brand-200/60 text-xs text-brand-800 leading-relaxed">
+            <strong>Ponderación Inteligente:</strong> Cada criterio se evalúa de 0 a 10 de forma intuitiva. El sistema calcula automáticamente la nota final otorgando un <strong>60% del peso a la calidad gastronómica</strong> (carne, pan y salsas).
           </div>
 
-          {/* Table of criteria */}
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {CRITERIA_CONFIG.map(crit => (
-              <div 
+              <div
                 key={crit.id}
-                className="p-3 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-between"
+                className="p-3.5 rounded-2xl bg-surface border border-neutral-200/70 flex items-center justify-between gap-4"
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-xl">{crit.icon}</span>
-                  <div>
-                    <h4 className="text-xs font-semibold text-gray-900">{crit.label}</h4>
-                    <p className="text-[11px] text-gray-500">{crit.description}</p>
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="text-2xl shrink-0">{crit.icon}</span>
+                  <div className="min-w-0">
+                    <h4 className="text-sm font-bold text-ink">{crit.label}</h4>
+                    <p className="text-xs text-ink-muted mt-0.5">{crit.description}</p>
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <span className="block text-xs font-bold text-red-600">
+                <div className="text-right shrink-0 tabular-nums">
+                  <span className="block text-xs font-extrabold text-brand-600">
                     {crit.weightLabel}
                   </span>
-                  <span className="text-[10px] text-gray-400">
-                    {crit.percentage}
+                  <span className="text-xs font-medium text-ink-muted">
+                    {crit.percentage} del total
                   </span>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Example card */}
-          <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-600 space-y-2">
-            <span className="text-[10px] uppercase font-semibold text-gray-500 block tracking-wider">
-              Ejemplo de cálculo (Kebab La Isla):
-            </span>
-            <div className="space-y-1 font-mono text-[11px] text-gray-500">
-              <p>Pablo: Kebab (4/6) + Ubicación (1/1) + Atención (1/1) + Precio (0.4/1) + Local (0.3/1) = <span className="text-red-600 font-bold">6.7 / 10</span></p>
-              <p>Marcos: Kebab (4/6) + Ubicación (1/1) + Atención (1/1) + Precio (0.35/1) + Local (0.75/1) = <span className="text-red-600 font-bold">7.1 / 10</span></p>
-            </div>
+          <div className="p-3.5 rounded-xl bg-surface border border-neutral-200/70 text-xs text-ink-muted text-center tabular-nums">
+            <strong>Fórmula:</strong> 6.0 (Sabor) + 1.0 (Ubicación) + 1.0 (Servicio) + 1.0 (Precio) + 1.0 (Local) = <strong>10.0 Pts Máx.</strong>
           </div>
-
-          <div className="pt-2 flex justify-end">
-            <button
-              onClick={onClose}
-              className="px-5 py-2 rounded-xl text-xs font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 border border-gray-200 transition-colors"
-            >
-              Cerrar
-            </button>
-          </div>
-
         </div>
-
       </div>
     </div>
   );

@@ -8,7 +8,8 @@ import ProfileModal from './components/ProfileModal';
 import AddKebabModal from './components/AddKebabModal';
 import FormulaInfoModal from './components/FormulaInfoModal';
 import { useAuth } from './context/AuthContext';
-import { Search, Filter, Star, MapPin } from 'lucide-react';
+import { BRAND_CONFIG } from './utils/formula';
+import { Search, ArrowUpDown, Award, Sparkles, X } from 'lucide-react';
 
 export default function App() {
   const { user, token } = useAuth();
@@ -17,9 +18,8 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedZone, setSelectedZone] = useState('Todos');
-  const [sortBy, setSortBy] = useState('rating'); // 'rating' | 'votes' | 'name'
+  const [sortBy, setSortBy] = useState('rating');
 
-  // Modals state
   const [selectedKebab, setSelectedKebab] = useState(null);
   const [ratingKebab, setRatingKebab] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -27,7 +27,6 @@ export default function App() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showFormulaModal, setShowFormulaModal] = useState(false);
 
-  // Fetch Kebabs from Backend
   const fetchKebabs = async () => {
     try {
       setLoading(true);
@@ -52,7 +51,6 @@ export default function App() {
     fetchKebabs();
   }, []);
 
-  // Guardar o actualizar puntuación
   const handleSaveRating = async (ratingPayload) => {
     if (!token) {
       setShowAuthModal(true);
@@ -69,14 +67,10 @@ export default function App() {
     });
 
     const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.error || 'Error al guardar puntuación');
-    }
-
+    if (!res.ok) throw new Error(data.error || 'Error al guardar puntuación');
     await fetchKebabs();
   };
 
-  // Eliminar puntuación propia
   const handleDeleteRating = async (kebabId) => {
     if (!token) return;
     try {
@@ -84,15 +78,12 @@ export default function App() {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` }
       });
-      if (res.ok) {
-        await fetchKebabs();
-      }
+      if (res.ok) await fetchKebabs();
     } catch (err) {
       console.error('Error deleting rating:', err);
     }
   };
 
-  // Añadir nuevo Kebab
   const handleAddKebab = async (newKebabData) => {
     if (!token) {
       setShowAuthModal(true);
@@ -109,30 +100,24 @@ export default function App() {
     });
 
     const data = await res.json();
-    if (!res.ok) {
-      throw new Error(data.error || 'Error al añadir kebab');
-    }
-
+    if (!res.ok) throw new Error(data.error || 'Error al añadir kebab');
     await fetchKebabs();
   };
 
-  // Zonas únicas disponibles
   const zones = useMemo(() => {
     const list = new Set(kebabs.map(k => k.zone).filter(Boolean));
     return ['Todos', ...Array.from(list)];
   }, [kebabs]);
 
-  // Filtrado y Ordenación
   const filteredKebabs = useMemo(() => {
     return kebabs
       .filter(k => {
-        const matchesSearch = 
+        const matchesSearch =
           k.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           k.zone.toLowerCase().includes(searchTerm.toLowerCase()) ||
           (k.description && k.description.toLowerCase().includes(searchTerm.toLowerCase()));
 
         const matchesZone = selectedZone === 'Todos' || k.zone === selectedZone;
-
         return matchesSearch && matchesZone;
       })
       .sort((a, b) => {
@@ -151,7 +136,6 @@ export default function App() {
       });
   }, [kebabs, searchTerm, selectedZone, sortBy]);
 
-  // Estadísticas globales
   const stats = useMemo(() => {
     const totalVotes = kebabs.reduce((acc, k) => acc + (k.ratings?.length || 0), 0);
     const topKebab = [...kebabs]
@@ -166,9 +150,8 @@ export default function App() {
   }, [kebabs, user]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-[#1d1d1f] antialiased">
-      
-      {/* Header */}
+    <div id="top" className="min-h-screen flex flex-col bg-surface text-ink antialiased">
+      {/* Sticky Glass Header */}
       <Header
         onOpenAuth={() => setShowAuthModal(true)}
         onOpenProfile={() => setShowProfileModal(true)}
@@ -176,99 +159,119 @@ export default function App() {
         onOpenFormula={() => setShowFormulaModal(true)}
       />
 
-      {/* Hero Section — Minimal Apple / Samsung Style */}
-      <section className="border-b border-gray-100 bg-[#fafafa]">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 text-center">
-          <span className="inline-block text-xs font-semibold uppercase tracking-widest text-red-600 mb-3">
-            Guía Oficial • Algeciras
-          </span>
-          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-[#1d1d1f] max-w-3xl mx-auto leading-tight">
-            Los mejores kebabs, clasificados con precisión.
+      {/* Hero Section — Public Brand Identity */}
+      <section className="relative overflow-hidden bg-white border-b border-neutral-200/70">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20 text-center">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200/60 text-xs font-bold uppercase tracking-wider text-brand-700 mb-5">
+            <Sparkles className="w-3.5 h-3.5"/>
+            <span>Plataforma Oficial • {BRAND_CONFIG.city}</span>
+          </div>
+
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-ink max-w-4xl mx-auto leading-[1.08]">
+            {BRAND_CONFIG.prefix}
+            <span className="text-brand-600">{BRAND_CONFIG.accent}</span>
           </h1>
-          <p className="mt-4 text-base sm:text-lg text-[#86868b] max-w-xl mx-auto leading-relaxed">
-            Evaluaciones objetivas por criterios: calidad de carne, salsas, atención, precio y local.
+
+          <p className="mt-4 text-lg sm:text-2xl font-semibold text-ink max-w-2xl mx-auto tracking-tight">
+            {BRAND_CONFIG.tagline}
           </p>
 
-          {/* Key Metrics */}
-          <div className="mt-10 flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-center">
-            <div>
-              <span className="block text-3xl sm:text-4xl font-bold text-[#1d1d1f]">
+          <p className="mt-2.5 text-sm sm:text-base text-ink-muted max-w-xl mx-auto leading-relaxed">
+            Descubre qué locales lideran el podio según la calidad de su carne, pan, salsas, trato y relación calidad-precio.
+          </p>
+
+          {/* Bento Stats Bar */}
+          <div className="mt-10 inline-grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 p-2 rounded-2xl bg-surface border border-neutral-200/80 max-w-2xl w-full">
+            <div className="p-3.5 rounded-xl bg-white shadow-sm text-center">
+              <span className="block text-2xl sm:text-3xl font-extrabold text-ink tabular-nums">
                 {kebabs.length}
               </span>
-              <span className="text-xs text-[#86868b] uppercase tracking-wider font-medium mt-0.5 block">
-                Locales Registrados
+              <span className="text-xs text-ink-muted font-semibold mt-0.5 block">
+                Locales en Ruta
               </span>
             </div>
 
-            <div className="w-px h-10 bg-gray-200 hidden sm:block" />
-
-            <div>
-              <span className="block text-3xl sm:text-4xl font-bold text-red-600">
+            <div className="p-3.5 rounded-xl bg-white shadow-sm text-center">
+              <span className="block text-2xl sm:text-3xl font-extrabold text-brand-600 tabular-nums">
                 {stats.totalVotes}
               </span>
-              <span className="text-xs text-[#86868b] uppercase tracking-wider font-medium mt-0.5 block">
-                Valoraciones
+              <span className="text-xs text-ink-muted font-semibold mt-0.5 block">
+                Reseñas Verificadas
               </span>
             </div>
 
-            {stats.topKebab && (
-              <>
-                <div className="w-px h-10 bg-gray-200 hidden sm:block" />
-                <div>
-                  <div className="flex items-center justify-center gap-1.5">
-                    <Star className="w-5 h-5 text-red-600 fill-current" />
-                    <span className="text-3xl sm:text-4xl font-bold text-[#1d1d1f]">
-                      {stats.topKebab.average_score?.toFixed(1)}
-                    </span>
+            <div
+              onClick={() => stats.topKebab && setSelectedKebab(stats.topKebab)}
+              className="col-span-2 sm:col-span-1 p-3.5 rounded-xl bg-white shadow-sm text-center cursor-pointer hover:bg-brand-50/40 transition-colors"
+            >
+              {stats.topKebab ? (
+                <>
+                  <div className="flex items-center justify-center gap-1 text-2xl sm:text-3xl font-extrabold text-ink tabular-nums">
+                    <Award className="w-5 h-5 text-amber-500 shrink-0"/>
+                    <span>{stats.topKebab.average_score?.toFixed(1)}</span>
                   </div>
-                  <span className="text-xs text-[#86868b] uppercase tracking-wider font-medium mt-0.5 block truncate max-w-[180px]">
-                    N.º 1: {stats.topKebab.name}
+                  <span className="text-xs text-ink font-semibold mt-0.5 block truncate px-1">
+                    #1 {stats.topKebab.name}
                   </span>
-                </div>
-              </>
-            )}
+                </>
+              ) : (
+                <>
+                  <span className="block text-2xl sm:text-3xl font-extrabold text-ink-muted">—</span>
+                  <span className="text-xs text-ink-muted font-semibold mt-0.5 block">Líder actual</span>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-10 space-y-8">
-        
-        {/* Controls: Search, Sort & Zones */}
-        <div className="space-y-4">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-6">
+        {/* Search, Sort & Zone Chips */}
+        <div className="bg-white p-4 rounded-2xl border border-neutral-200/80 shadow-card space-y-4">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            {/* Search Input */}
             <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted"/>
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Buscar por nombre o zona..."
-                className="w-full pl-10 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl text-[#1d1d1f] placeholder-gray-400 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/20 transition-all"
+                placeholder="Buscar por nombre de kebab, calle o zona..."
+                className="w-full pl-10 pr-9 py-2.5 text-sm bg-surface border border-neutral-200 rounded-xl text-ink placeholder-ink-muted focus:outline-none focus:bg-white focus:border-brand-600 focus:ring-2 focus:ring-brand-600/15 transition-all"
               />
+              {searchTerm && (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm('')}
+                  aria-label="Limpiar búsqueda"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink"
+                >
+                  <X className="w-4 h-4"/>
+                </button>
+              )}
             </div>
 
-            {/* Sort Selector */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-600">
-                <Filter className="w-3.5 h-3.5 text-gray-400" />
-                <span className="hidden sm:inline">Ordenar:</span>
+            <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2 px-3.5 py-2.5 bg-surface border border-neutral-200 rounded-xl text-xs font-semibold text-ink-muted w-full sm:w-auto justify-between">
+                <span className="inline-flex items-center gap-1.5">
+                  <ArrowUpDown className="w-3.5 h-3.5 text-brand-600"/>
+                  <span>Ordenar por:</span>
+                </span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-transparent text-[#1d1d1f] font-semibold focus:outline-none cursor-pointer"
+                  className="bg-transparent text-ink font-bold focus:outline-none cursor-pointer"
                 >
-                  <option value="rating">Puntuación</option>
+                  <option value="rating">Mejor Nota</option>
                   <option value="votes">Más Valorados</option>
-                  <option value="name">Nombre</option>
+                  <option value="name">Orden Alfabético</option>
                 </select>
               </div>
             </div>
           </div>
 
           {/* Zone Filter Chips */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             {zones.map(zone => {
               const count = zone === 'Todos' ? kebabs.length : kebabs.filter(k => k.zone === zone).length;
               const isSelected = selectedZone === zone;
@@ -276,17 +279,20 @@ export default function App() {
               return (
                 <button
                   key={zone}
+                  type="button"
                   onClick={() => setSelectedZone(zone)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-2 shrink-0 ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2 shrink-0 ${
                     isSelected
-                      ? 'bg-red-600 text-white'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      ? 'bg-ink text-white shadow-sm'
+                      : 'bg-surface text-ink-muted hover:text-ink hover:bg-neutral-200/70'
                   }`}
                 >
                   <span>{zone}</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                    isSelected ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-500'
-                  }`}>
+                  <span
+                    className={`text-xs px-1.5 py-0.5 rounded-full tabular-nums ${
+                      isSelected ? 'bg-white/20 text-white' : 'bg-white text-ink-muted'
+                    }`}
+                  >
                     {count}
                   </span>
                 </button>
@@ -299,7 +305,14 @@ export default function App() {
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="h-80 rounded-2xl bg-gray-50 animate-pulse border border-gray-100" />
+              <div key={i} className="h-96 rounded-2xl bg-white animate-pulse border border-neutral-200/70 p-5 flex flex-col justify-between">
+                <div className="h-44 rounded-xl bg-neutral-200/70" />
+                <div className="space-y-2.5">
+                  <div className="h-5 w-2/3 bg-neutral-200/70 rounded" />
+                  <div className="h-3.5 w-1/2 bg-neutral-200/70 rounded" />
+                </div>
+                <div className="h-9 bg-neutral-100 rounded-xl" />
+              </div>
             ))}
           </div>
         ) : filteredKebabs.length > 0 ? (
@@ -308,7 +321,7 @@ export default function App() {
               <KebabCard
                 key={kebab.id}
                 kebab={kebab}
-                rank={sortBy === 'rating' ? idx + 1 : null}
+                rank={sortBy === 'rating' && kebab.average_score !== null ? idx + 1 : null}
                 onClick={() => setSelectedKebab(kebab)}
                 onRateClick={(k) => {
                   if (!user) {
@@ -322,29 +335,35 @@ export default function App() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-20 px-4 rounded-2xl bg-gray-50 border border-gray-100">
-            <h3 className="text-base font-semibold text-[#1d1d1f]">
-              No se han encontrado resultados
+          <div className="text-center py-16 px-4 rounded-2xl bg-white border border-neutral-200/80 shadow-card">
+            <h3 className="text-base font-bold text-ink">
+              No hemos encontrado ningún kebab con ese filtro
             </h3>
-            <p className="text-xs text-[#86868b] mt-1 max-w-sm mx-auto">
-              Prueba con otro término de búsqueda o selecciona otra zona.
+            <p className="text-xs text-ink-muted mt-1 max-w-sm mx-auto">
+              Prueba con otro término de búsqueda o restablece el filtro de zonas.
             </p>
+            <button
+              type="button"
+              onClick={() => { setSearchTerm(''); setSelectedZone('Todos'); }}
+              className="mt-4 px-4 py-2 rounded-xl text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 transition-colors"
+            >
+              Ver todos los locales
+            </button>
           </div>
         )}
-
       </main>
 
-      {/* Minimal Footer */}
-      <footer className="border-t border-gray-100 bg-white py-8 text-xs text-[#86868b]">
+      {/* Footer */}
+      <footer className="border-t border-neutral-200/80 bg-white py-8 text-xs text-ink-muted">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-[#1d1d1f]">AlgeKebab</span>
+            <span className="font-bold text-ink">{BRAND_CONFIG.name}</span>
             <span>•</span>
-            <span>Algeciras</span>
+            <span>Ranking Gastronómico de {BRAND_CONFIG.city}</span>
           </div>
 
-          <p className="text-gray-400">
-            © {new Date().getFullYear()} AlgeKebab. Todos los derechos reservados.
+          <p className="text-ink-muted">
+            © {new Date().getFullYear()} {BRAND_CONFIG.name}. Criterios transparentes y abiertos a la comunidad.
           </p>
         </div>
       </footer>
@@ -353,7 +372,6 @@ export default function App() {
       {selectedKebab && (
         <KebabDetailModal
           kebab={selectedKebab}
-          currentUserId={user?.id}
           onClose={() => setSelectedKebab(null)}
           onRateClick={(k) => {
             if (!user) {
@@ -362,6 +380,7 @@ export default function App() {
               setRatingKebab(k);
             }
           }}
+          currentUserId={user?.id}
           onDeleteRating={handleDeleteRating}
         />
       )}
@@ -375,16 +394,12 @@ export default function App() {
         />
       )}
 
-      {showAuthModal && (
-        <AuthModal
-          onClose={() => setShowAuthModal(false)}
-        />
-      )}
+      {showAuthModal && <AuthModal onClose={() => setShowAuthModal(false)} />}
 
       {showProfileModal && (
         <ProfileModal
-          totalUserRatings={stats.myVotesCount}
           onClose={() => setShowProfileModal(false)}
+          totalUserRatings={stats.myVotesCount}
         />
       )}
 
@@ -395,12 +410,7 @@ export default function App() {
         />
       )}
 
-      {showFormulaModal && (
-        <FormulaInfoModal
-          onClose={() => setShowFormulaModal(false)}
-        />
-      )}
-
+      {showFormulaModal && <FormulaInfoModal onClose={() => setShowFormulaModal(false)} />}
     </div>
   );
 }

@@ -4,7 +4,7 @@
 // Puntuación sobre 10 en cada aspecto:
 // - Kebab: Puntuado de 0 a 10, vale hasta 6 puntos de la nota final (6/6)
 // - Ubicación: Puntuado de 0 a 10, vale hasta 1 punto (1/1)
-// - Atención del moro: Puntuado de 0 a 10, vale hasta 1 punto (1/1)
+// - Atención y Servicio: Puntuado de 0 a 10, vale hasta 1 punto (1/1)
 // - Calidad-Precio: Puntuado de 0 a 10, vale hasta 1 punto (1/1)
 // - Local-Presentación: Puntuado de 0 a 10, vale hasta 1 punto (1/1)
 // TOTAL MÁXIMO = 6 + 1 + 1 + 1 + 1 = 10 PUNTOS
