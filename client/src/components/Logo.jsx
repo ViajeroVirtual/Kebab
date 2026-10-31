@@ -17,7 +17,7 @@ export default function Logo({ size = 'md', showBadge = true, centered = false }
         <span className="text-brand-600">{BRAND_CONFIG.accent}</span>
       </span>
       {showBadge && (
-        <span className={`${s.badge} font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200/60`}>
+        <span className={`hidden sm:inline-flex ${s.badge} font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200/60`}>
           {BRAND_CONFIG.city}
         </span>
       )}

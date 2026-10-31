@@ -62,19 +62,22 @@ export default function AddKebabModal({ onClose, onAdd }) {
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-ink/50 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md bg-white rounded-2xl shadow-modal overflow-hidden animate-modal-in"
+        className="relative w-full max-w-md bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh] sm:max-h-[88vh] animate-modal-in pb-safe"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="p-5 sm:p-6 border-b border-neutral-100 flex items-center justify-between">
+        {/* Mobile Drag Indicator */}
+        <div className="w-12 h-1.5 bg-neutral-300 rounded-full mx-auto my-2 sm:hidden shrink-0" />
+
+        <div className="p-4 sm:p-6 border-b border-neutral-100 flex items-center justify-between shrink-0">
           <div>
             <h3 className="text-base font-extrabold text-ink">
               Añadir Establecimiento
             </h3>
-            <p className="text-xs text-ink-muted mt-0.5">
+            <p className="text-[11px] sm:text-xs text-ink-muted mt-0.5">
               Incorpora un nuevo local al directorio público de Algeciras
             </p>
           </div>
@@ -83,13 +86,13 @@ export default function AddKebabModal({ onClose, onAdd }) {
             type="button"
             onClick={onClose}
             aria-label="Cerrar"
-            className="p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-neutral-100 transition-colors"
+            className="p-1.5 sm:p-2 rounded-xl text-ink-muted hover:text-ink hover:bg-neutral-100 transition-colors"
           >
             <X className="w-5 h-5"/>
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 sm:p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto flex-1">
           {error && (
             <div className="p-3.5 rounded-xl bg-brand-50 border border-brand-200 text-xs font-semibold text-brand-700 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0"/>
@@ -171,11 +174,11 @@ export default function AddKebabModal({ onClose, onAdd }) {
             />
           </div>
 
-          <div className="pt-3 flex items-center justify-end gap-3 border-t border-neutral-100">
+          <div className="pt-3 flex items-center justify-end gap-2.5 border-t border-neutral-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-ink-muted hover:text-ink hover:bg-neutral-100 transition-colors"
+              className="px-4 py-2.5 rounded-xl text-xs font-semibold text-ink-muted hover:text-ink hover:bg-neutral-100 transition-colors"
             >
               Cancelar
             </button>
@@ -183,7 +186,7 @@ export default function AddKebabModal({ onClose, onAdd }) {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold text-white bg-brand-600 hover:bg-brand-700 shadow-sm disabled:opacity-50 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 active:scale-[0.98] shadow-sm disabled:opacity-50 transition-colors"
             >
               <Plus className="w-4 h-4"/>
               <span>{loading ? 'Guardando...' : 'Publicar Local'}</span>

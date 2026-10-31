@@ -159,65 +159,65 @@ export default function App() {
         onOpenFormula={() => setShowFormulaModal(true)}
       />
 
-      {/* Hero Section — Public Brand Identity */}
+      {/* Hero Section — Public Brand Identity (Mobile-First Optimized) */}
       <section className="relative overflow-hidden bg-white border-b border-neutral-200/70">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20 text-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200/60 text-xs font-bold uppercase tracking-wider text-brand-700 mb-5">
-            <Sparkles className="w-3.5 h-3.5"/>
-            <span>Plataforma Oficial • {BRAND_CONFIG.city}</span>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-14 text-center">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 border border-brand-200/60 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-brand-700 mb-3 sm:mb-4">
+            <Sparkles className="w-3.5 h-3.5 shrink-0"/>
+            <span>Ranking Oficial • {BRAND_CONFIG.city}</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-ink max-w-4xl mx-auto leading-[1.08]">
+          <h1 className="text-3xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-ink max-w-4xl mx-auto leading-tight">
             {BRAND_CONFIG.prefix}
             <span className="text-brand-600">{BRAND_CONFIG.accent}</span>
           </h1>
 
-          <p className="mt-4 text-lg sm:text-2xl font-semibold text-ink max-w-2xl mx-auto tracking-tight">
+          <p className="mt-2 sm:mt-4 text-base sm:text-2xl font-bold text-ink max-w-2xl mx-auto tracking-tight">
             {BRAND_CONFIG.tagline}
           </p>
 
-          <p className="mt-2.5 text-sm sm:text-base text-ink-muted max-w-xl mx-auto leading-relaxed">
-            Descubre qué locales lideran el podio según la calidad de su carne, pan, salsas, trato y relación calidad-precio.
+          <p className="mt-1.5 sm:mt-2.5 text-xs sm:text-base text-ink-muted max-w-xl mx-auto leading-relaxed">
+            Descubre qué locales lideran el podio según carne, pan, salsas, trato y calidad-precio.
           </p>
 
-          {/* Bento Stats Bar */}
-          <div className="mt-10 inline-grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 p-2 rounded-2xl bg-surface border border-neutral-200/80 max-w-2xl w-full">
-            <div className="p-3.5 rounded-xl bg-white shadow-sm text-center">
-              <span className="block text-2xl sm:text-3xl font-extrabold text-ink tabular-nums">
+          {/* Bento Stats Bar (Streamlined 3-column pill on all screens) */}
+          <div className="mt-6 sm:mt-8 grid grid-cols-3 gap-2 sm:gap-4 p-1.5 sm:p-2 rounded-2xl bg-surface border border-neutral-200/80 max-w-xl mx-auto w-full">
+            <div className="p-2 sm:p-3.5 rounded-xl bg-white shadow-sm text-center">
+              <span className="block text-xl sm:text-3xl font-extrabold text-ink tabular-nums">
                 {kebabs.length}
               </span>
-              <span className="text-xs text-ink-muted font-semibold mt-0.5 block">
-                Locales en Ruta
+              <span className="text-[11px] sm:text-xs text-ink-muted font-semibold mt-0.5 block truncate">
+                Locales
               </span>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-white shadow-sm text-center">
-              <span className="block text-2xl sm:text-3xl font-extrabold text-brand-600 tabular-nums">
+            <div className="p-2 sm:p-3.5 rounded-xl bg-white shadow-sm text-center">
+              <span className="block text-xl sm:text-3xl font-extrabold text-brand-600 tabular-nums">
                 {stats.totalVotes}
               </span>
-              <span className="text-xs text-ink-muted font-semibold mt-0.5 block">
-                Reseñas Verificadas
+              <span className="text-[11px] sm:text-xs text-ink-muted font-semibold mt-0.5 block truncate">
+                Reseñas
               </span>
             </div>
 
             <div
               onClick={() => stats.topKebab && setSelectedKebab(stats.topKebab)}
-              className="col-span-2 sm:col-span-1 p-3.5 rounded-xl bg-white shadow-sm text-center cursor-pointer hover:bg-brand-50/40 transition-colors"
+              className="p-2 sm:p-3.5 rounded-xl bg-white shadow-sm text-center cursor-pointer hover:bg-brand-50/40 transition-colors"
             >
               {stats.topKebab ? (
                 <>
-                  <div className="flex items-center justify-center gap-1 text-2xl sm:text-3xl font-extrabold text-ink tabular-nums">
-                    <Award className="w-5 h-5 text-amber-500 shrink-0"/>
+                  <div className="flex items-center justify-center gap-1 text-xl sm:text-3xl font-extrabold text-ink tabular-nums">
+                    <Award className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500 shrink-0"/>
                     <span>{stats.topKebab.average_score?.toFixed(1)}</span>
                   </div>
-                  <span className="text-xs text-ink font-semibold mt-0.5 block truncate px-1">
-                    #1 {stats.topKebab.name}
+                  <span className="text-[11px] sm:text-xs text-ink font-semibold mt-0.5 block truncate px-0.5">
+                    #1 {stats.topKebab.name.split(' ')[0]}
                   </span>
                 </>
               ) : (
                 <>
-                  <span className="block text-2xl sm:text-3xl font-extrabold text-ink-muted">—</span>
-                  <span className="text-xs text-ink-muted font-semibold mt-0.5 block">Líder actual</span>
+                  <span className="block text-xl sm:text-3xl font-extrabold text-ink-muted">—</span>
+                  <span className="text-[11px] sm:text-xs text-ink-muted font-semibold mt-0.5 block">Líder</span>
                 </>
               )}
             </div>
@@ -226,25 +226,25 @@ export default function App() {
       </section>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-10 space-y-6">
+      <main className="flex-1 max-w-6xl w-full mx-auto px-3.5 sm:px-6 py-5 sm:py-8 space-y-4 sm:space-y-6">
         {/* Search, Sort & Zone Chips */}
-        <div className="bg-white p-4 rounded-2xl border border-neutral-200/80 shadow-card space-y-4">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div className="bg-white p-3 sm:p-4 rounded-2xl border border-neutral-200/80 shadow-card space-y-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
             <div className="relative flex-1">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted"/>
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Buscar por nombre de kebab, calle o zona..."
-                className="w-full pl-10 pr-9 py-2.5 text-sm bg-surface border border-neutral-200 rounded-xl text-ink placeholder-ink-muted focus:outline-none focus:bg-white focus:border-brand-600 focus:ring-2 focus:ring-brand-600/15 transition-all"
+                placeholder="Buscar kebab, calle o zona..."
+                className="w-full pl-9 pr-9 py-2 text-sm bg-surface border border-neutral-200 rounded-xl text-ink placeholder-ink-muted focus:outline-none focus:bg-white focus:border-brand-600 focus:ring-2 focus:ring-brand-600/15 transition-all"
               />
               {searchTerm && (
                 <button
                   type="button"
                   onClick={() => setSearchTerm('')}
                   aria-label="Limpiar búsqueda"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-muted hover:text-ink p-1"
                 >
                   <X className="w-4 h-4"/>
                 </button>
@@ -252,26 +252,26 @@ export default function App() {
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
-              <div className="flex items-center gap-2 px-3.5 py-2.5 bg-surface border border-neutral-200 rounded-xl text-xs font-semibold text-ink-muted w-full sm:w-auto justify-between">
-                <span className="inline-flex items-center gap-1.5">
+              <div className="flex items-center gap-2 px-3 py-2 bg-surface border border-neutral-200 rounded-xl text-xs font-semibold text-ink-muted w-full sm:w-auto justify-between">
+                <span className="inline-flex items-center gap-1.5 shrink-0">
                   <ArrowUpDown className="w-3.5 h-3.5 text-brand-600"/>
-                  <span>Ordenar por:</span>
+                  <span className="hidden xs:inline">Ordenar:</span>
                 </span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-transparent text-ink font-bold focus:outline-none cursor-pointer"
+                  className="bg-transparent text-ink font-bold focus:outline-none cursor-pointer text-xs sm:text-sm"
                 >
                   <option value="rating">Mejor Nota</option>
                   <option value="votes">Más Valorados</option>
-                  <option value="name">Orden Alfabético</option>
+                  <option value="name">Alfabético</option>
                 </select>
               </div>
             </div>
           </div>
 
-          {/* Zone Filter Chips */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {/* Zone Filter Chips (Smooth momentum horizontal scroll) */}
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none -mx-1 px-1 touch-pan-x">
             {zones.map(zone => {
               const count = zone === 'Todos' ? kebabs.length : kebabs.filter(k => k.zone === zone).length;
               const isSelected = selectedZone === zone;
@@ -281,7 +281,7 @@ export default function App() {
                   key={zone}
                   type="button"
                   onClick={() => setSelectedZone(zone)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-2 shrink-0 ${
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1.5 shrink-0 ${
                     isSelected
                       ? 'bg-ink text-white shadow-sm'
                       : 'bg-surface text-ink-muted hover:text-ink hover:bg-neutral-200/70'
@@ -289,7 +289,7 @@ export default function App() {
                 >
                   <span>{zone}</span>
                   <span
-                    className={`text-xs px-1.5 py-0.5 rounded-full tabular-nums ${
+                    className={`text-[10px] sm:text-xs px-1.5 py-0.2 rounded-full tabular-nums ${
                       isSelected ? 'bg-white/20 text-white' : 'bg-white text-ink-muted'
                     }`}
                   >
@@ -303,10 +303,10 @@ export default function App() {
 
         {/* Kebabs Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="h-96 rounded-2xl bg-white animate-pulse border border-neutral-200/70 p-5 flex flex-col justify-between">
-                <div className="h-44 rounded-xl bg-neutral-200/70" />
+              <div key={i} className="h-80 sm:h-96 rounded-2xl bg-white animate-pulse border border-neutral-200/70 p-4 sm:p-5 flex flex-col justify-between">
+                <div className="h-40 sm:h-44 rounded-xl bg-neutral-200/70" />
                 <div className="space-y-2.5">
                   <div className="h-5 w-2/3 bg-neutral-200/70 rounded" />
                   <div className="h-3.5 w-1/2 bg-neutral-200/70 rounded" />
@@ -316,7 +316,7 @@ export default function App() {
             ))}
           </div>
         ) : filteredKebabs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {filteredKebabs.map((kebab, idx) => (
               <KebabCard
                 key={kebab.id}

@@ -47,14 +47,17 @@ export default function AuthModal({ onClose }) {
     <div
       role="dialog"
       aria-modal="true"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-ink/50 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-md bg-white rounded-2xl shadow-modal overflow-hidden animate-modal-in"
+        className="relative w-full max-w-md bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl overflow-hidden animate-modal-in pb-safe"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between p-6 border-b border-neutral-100">
+        {/* Mobile Drag Indicator */}
+        <div className="w-12 h-1.5 bg-neutral-300 rounded-full mx-auto my-2 sm:hidden shrink-0" />
+
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-neutral-100">
           <Logo size="sm"/>
           <button
             type="button"
@@ -66,7 +69,7 @@ export default function AuthModal({ onClose }) {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 border-b border-neutral-100 bg-surface/50 p-1.5 mx-6 mt-5 rounded-xl">
+        <div className="grid grid-cols-2 border-b border-neutral-100 bg-surface/50 p-1.5 mx-4 sm:mx-6 mt-4 sm:mt-5 rounded-xl">
           <button
             type="button"
             onClick={() => { setIsLogin(true); setError(''); }}
@@ -87,7 +90,7 @@ export default function AuthModal({ onClose }) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
           {error && (
             <div className="flex items-center gap-2 p-3.5 bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold rounded-xl">
               <AlertCircle className="w-4 h-4 shrink-0"/>
