@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || '';
 const SUPABASE_KEY = process.env.SUPABASE_KEY || '';
-const DATABASE_URL = process.env.DATABASE_URL || '';
+const DATABASE_URL = process.env.DATABASE_URL || 'postgresql://la-ruta-del-kebab:Villamil2412@postgresql-la-ruta-del-kebab.alwaysdata.net:5432/la-ruta-del-kebab_kebab';
 
 let supabase = null;
 let pool = null;
@@ -161,7 +161,7 @@ function readLocalDb() {
           calidad_precio_score: 4.0,
           local_presentacion_score: 3.0,
           final_score: 6.7,
-          comment: 'Kebab 4/6, Ubicación 1/1, Atención del moro 1/1, Calidad-Precio 0.4/1, Local-Presentación 0.3/1',
+          comment: 'Kebab 4/6, Ubicación 1/1, Atención y Servicio 1/1, Calidad-Precio 0.4/1, Local-Presentación 0.3/1',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         },
@@ -175,7 +175,7 @@ function readLocalDb() {
           calidad_precio_score: 3.5,
           local_presentacion_score: 7.5,
           final_score: 7.1,
-          comment: 'Kebab 4/6, Ubicación 1/1, Atención del moro 1/1, Calidad-Precio 0.35/1, Local-Presentación 0.75/1',
+          comment: 'Kebab 4/6, Ubicación 1/1, Atención y Servicio 1/1, Calidad-Precio 0.35/1, Local-Presentación 0.75/1',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         }
@@ -188,7 +188,29 @@ function readLocalDb() {
 
   try {
     const raw = fs.readFileSync(localDbPath, 'utf-8');
-    return JSON.parse(raw);
+    const data = JSON.parse(raw);
+    let changed = false;
+    if (Array.isArray(data.users)) {
+      data.users.forEach(u => {
+        if (u.username === 'Pablo' || u.display_name === 'Pablo') {
+          u.username = 'Viajero';
+          u.display_name = 'Viajero';
+          changed = true;
+        }
+      });
+    }
+    if (Array.isArray(data.ratings)) {
+      data.ratings.forEach(r => {
+        if (typeof r.comment === 'string' && r.comment.includes('Atención del moro')) {
+          r.comment = r.comment.replace(/Atención del moro/g, 'Atención y Servicio');
+          changed = true;
+        }
+      });
+    }
+    if (changed) {
+      fs.writeFileSync(localDbPath, JSON.stringify(data, null, 2), 'utf-8');
+    }
+    return data;
   } catch (err) {
     return { users: [], kebabs: INITIAL_KEBABS, ratings: [] };
   }
