@@ -4,23 +4,23 @@ import { CRITERIA_CONFIG } from '../utils/formula';
 
 export default function FormulaInfoModal({ onClose }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
       <div 
-        className="relative w-full max-w-lg bg-surface-100 border border-surface-border rounded-2xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Header */}
-        <div className="p-5 border-b border-surface-border flex items-center justify-between bg-surface-50">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-xl bg-brand-500/10 text-brand-400 border border-brand-500/20">
+        <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-white">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-red-50 text-red-600 border border-red-100">
               <Calculator className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">
+              <h3 className="text-base font-semibold text-gray-900">
                 Fórmula Oficial del Grupo
               </h3>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-gray-500 mt-0.5">
                 Puntuaciones de 0 a 10 con conversión automática
               </p>
             </div>
@@ -28,7 +28,7 @@ export default function FormulaInfoModal({ onClose }) {
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-surface-200"
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -37,8 +37,8 @@ export default function FormulaInfoModal({ onClose }) {
         {/* Body */}
         <div className="p-5 space-y-4 max-h-[80vh] overflow-y-auto">
           
-          <div className="p-3.5 rounded-xl bg-brand-500/10 border border-brand-500/20 text-xs text-brand-300 leading-relaxed">
-            ✨ <strong>Fácil y sin decimales:</strong> Al votar ponéis una nota limpia del 0 al 10 en cada aspecto. El sistema hace el cálculo automático según los puntos máximos de cada categoría.
+          <div className="p-3.5 rounded-xl bg-red-50 border border-red-100 text-xs text-red-700 leading-relaxed">
+            <strong>Fácil y sin decimales:</strong> Al votar ponéis una nota limpia del 0 al 10 en cada aspecto. El sistema hace el cálculo automático según los puntos máximos de cada categoría.
           </div>
 
           {/* Table of criteria */}
@@ -46,21 +46,21 @@ export default function FormulaInfoModal({ onClose }) {
             {CRITERIA_CONFIG.map(crit => (
               <div 
                 key={crit.id}
-                className="p-3 rounded-xl bg-surface-50 border border-surface-border flex items-center justify-between"
+                className="p-3 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-xl">{crit.icon}</span>
                   <div>
-                    <h4 className="text-xs font-bold text-white">{crit.label}</h4>
-                    <p className="text-[11px] text-slate-400">{crit.description}</p>
+                    <h4 className="text-xs font-semibold text-gray-900">{crit.label}</h4>
+                    <p className="text-[11px] text-gray-500">{crit.description}</p>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <span className="block text-xs font-black text-brand-400">
+                  <span className="block text-xs font-bold text-red-600">
                     {crit.weightLabel}
                   </span>
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-[10px] text-gray-400">
                     {crit.percentage}
                   </span>
                 </div>
@@ -69,20 +69,20 @@ export default function FormulaInfoModal({ onClose }) {
           </div>
 
           {/* Example card */}
-          <div className="p-3.5 rounded-xl bg-surface-50 border border-surface-border text-xs text-slate-300 space-y-2">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">
+          <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-200 text-xs text-gray-600 space-y-2">
+            <span className="text-[10px] uppercase font-semibold text-gray-500 block tracking-wider">
               Ejemplo de cálculo (Kebab La Isla):
             </span>
-            <div className="space-y-1 font-mono text-[11px] text-slate-400">
-              <p>• <strong>Pablo:</strong> Kebab (4/6) + Ubicación (1/1) + Atención (1/1) + Precio (0.4/1) + Local (0.3/1) = <span className="text-brand-400 font-bold">6.7 / 10</span></p>
-              <p>• <strong>Marcos:</strong> Kebab (4/6) + Ubicación (1/1) + Atención (1/1) + Precio (0.35/1) + Local (0.75/1) = <span className="text-emerald-400 font-bold">7.1 / 10</span></p>
+            <div className="space-y-1 font-mono text-[11px] text-gray-500">
+              <p>Pablo: Kebab (4/6) + Ubicación (1/1) + Atención (1/1) + Precio (0.4/1) + Local (0.3/1) = <span className="text-red-600 font-bold">6.7 / 10</span></p>
+              <p>Marcos: Kebab (4/6) + Ubicación (1/1) + Atención (1/1) + Precio (0.35/1) + Local (0.75/1) = <span className="text-red-600 font-bold">7.1 / 10</span></p>
             </div>
           </div>
 
           <div className="pt-2 flex justify-end">
             <button
               onClick={onClose}
-              className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-surface-200 hover:bg-surface-300 border border-surface-border transition-colors"
+              className="px-5 py-2 rounded-xl text-xs font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 border border-gray-200 transition-colors"
             >
               Cerrar
             </button>

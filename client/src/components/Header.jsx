@@ -1,69 +1,57 @@
 import React from 'react';
-import { useAuth } from '../context/AuthContext';
-import { User, LogIn, PlusCircle, Sliders } from 'lucide-react';
 import Logo from './Logo';
+import { useAuth } from '../context/AuthContext';
+import { LogIn, PlusCircle, Settings, User } from 'lucide-react';
 
-export default function Header({ onOpenAuth, onOpenProfile, onOpenAddKebab, onOpenFormula }) {
+const Header = ({ onOpenFormula, onOpenAddKebab, onOpenProfile, onOpenAuth }) => {
   const { user } = useAuth();
 
   return (
-    <header className="sticky top-0 z-30 bg-[#0c0d12]/95 backdrop-blur-xl border-b border-white/[0.08] shadow-2xl">
-      <div className="max-w-6xl mx-auto px-4 h-16 sm:h-20 flex items-center justify-between">
-        
-        {/* Logotipo Oficial */}
-        <Logo size="md" />
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-16">
+          <Logo size="md" />
 
-        {/* Acciones */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Botón Fórmula de Puntuación */}
-          <button
-            onClick={onOpenFormula}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] transition-all hover:text-white"
-            title="Ver fórmula y pesos de puntuación"
-          >
-            <Sliders className="w-4 h-4 text-amber-400" />
-            <span className="hidden sm:inline">Criterios Oficiales</span>
-          </button>
-
-          {/* Botón Añadir Kebab (Solo logueados) */}
-          {user && (
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
-              onClick={onOpenAddKebab}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 transition-all shadow-md shadow-orange-600/20"
+              onClick={onOpenFormula}
+              className="flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-[#86868b] hover:text-[#1d1d1f] transition-colors rounded-lg hover:bg-gray-50"
             >
-              <PlusCircle className="w-4 h-4" />
-              <span className="hidden sm:inline">Nuevo Kebab</span>
+              <Settings size={16} />
+              <span className="hidden sm:inline">Criterios</span>
             </button>
-          )}
 
-          {/* Perfil o Iniciar Sesión */}
-          {user ? (
-            <button
-              onClick={onOpenProfile}
-              className="flex items-center gap-2.5 pl-2 pr-3.5 py-1.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.12] transition-all group"
-            >
-              <div
-                className="w-7 h-7 rounded-full flex items-center justify-center font-black text-xs text-white uppercase shadow-md ring-1 ring-white/20"
-                style={{ backgroundColor: user.avatar_color || '#f97316' }}
+            {user && (
+              <button
+                onClick={onOpenAddKebab}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-white bg-[#dc2626] hover:bg-[#b91c1c] transition-colors rounded-lg"
               >
-                {user.username.slice(0, 1)}
-              </div>
-              <span className="text-xs font-bold text-slate-200 group-hover:text-amber-400 transition-colors">
-                {user.username}
-              </span>
-            </button>
-          ) : (
-            <button
-              onClick={onOpenAuth}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black text-black bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 shadow-lg shadow-orange-500/25 transition-all transform active:scale-95"
-            >
-              <LogIn className="w-4 h-4" />
-              <span>Entrar / Votar</span>
-            </button>
-          )}
-        </div>
+                <PlusCircle size={16} />
+                <span className="hidden sm:inline">Nuevo Kebab</span>
+              </button>
+            )}
 
+            {user ? (
+              <button
+                onClick={onOpenProfile}
+                className="flex items-center justify-center w-9 h-9 rounded-full bg-[#dc2626] text-white text-sm font-semibold hover:bg-[#b91c1c] transition-colors"
+              >
+                {user.username ? user.username.charAt(0).toUpperCase() : <User size={16} />}
+              </button>
+            ) : (
+              <button
+                onClick={onOpenAuth}
+                className="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-[#dc2626] border border-[#dc2626]/30 hover:border-[#dc2626] hover:bg-red-50 transition-colors rounded-lg"
+              >
+                <LogIn size={16} />
+                <span>Entrar</span>
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </header>
   );
-}
+};
+
+export default Header;

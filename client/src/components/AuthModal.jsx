@@ -1,139 +1,169 @@
 import React, { useState } from 'react';
-import { X, LogIn, UserPlus, Lock, User, AlertCircle } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
 import Logo from './Logo';
+import { useAuth } from '../context/AuthContext';
+import { X, LogIn, UserPlus, Lock, User, AlertCircle } from 'lucide-react';
 
-export default function AuthModal({ onClose }) {
+const AuthModal = ({ isOpen, onClose }) => {
   const { login, register } = useAuth();
-  const [isRegister, setIsRegister] = useState(false);
+  const [activeTab, setActiveTab] = useState('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  if (!isOpen) return null;
+
+  const resetForm = () => {
+    setUsername('');
+    setPassword('');
+    setError('');
+  };
+
+  const switchTab = (tab) => {
+    setActiveTab(tab);
+    resetForm();
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!username.trim() || !password.trim()) {
+      setError('Por favor, completa todos los campos.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      if (isRegister) {
-        await register(username, password);
+      if (activeTab === 'login') {
+        await login(username.trim(), password);
       } else {
-        await login(username, password);
+        await register(username.trim(), password);
       }
+      resetForm();
       onClose();
     } catch (err) {
-      setError(err.message || 'Error en la autenticación');
+      setError(err.response?.data?.error || err.message || 'Ha ocurrido un error. Inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
-      <div 
-        className="relative w-full max-w-md bg-[#12141c] border border-white/[0.12] rounded-3xl shadow-2xl overflow-hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
-        
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden">
         {/* Header */}
-        <div className="p-6 border-b border-white/[0.08] flex items-center justify-between bg-gradient-to-r from-slate-900 to-[#161824]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <Logo size="sm" />
-
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] transition-colors"
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-[#86868b] hover:text-[#1d1d1f] hover:bg-gray-100 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X size={18} />
           </button>
         </div>
 
-        {/* Tab switch */}
-        <div className="flex border-b border-white/[0.08] bg-black/30 p-1.5">
+        {/* Tabs */}
+        <div className="flex border-b border-gray-100">
           <button
-            type="button"
-            onClick={() => { setIsRegister(false); setError(''); }}
-            className={`flex-1 py-2 text-xs font-black rounded-xl transition-all ${
-              !isRegister
-                ? 'bg-white/[0.1] text-amber-400 shadow-md ring-1 ring-white/10'
-                : 'text-slate-400 hover:text-slate-200'
+            onClick={() => switchTab('login')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-medium transition-colors ${
+              activeTab === 'login'
+                ? 'text-[#dc2626] border-b-2 border-[#dc2626]'
+                : 'text-[#86868b] hover:text-[#1d1d1f]'
             }`}
           >
+            <LogIn size={16} />
             Iniciar Sesión
           </button>
           <button
-            type="button"
-            onClick={() => { setIsRegister(true); setError(''); }}
-            className={`flex-1 py-2 text-xs font-black rounded-xl transition-all ${
-              isRegister
-                ? 'bg-white/[0.1] text-amber-400 shadow-md ring-1 ring-white/10'
-                : 'text-slate-400 hover:text-slate-200'
+            onClick={() => switchTab('register')}
+            className={`flex-1 flex items-center justify-center gap-2 py-3.5 text-sm font-medium transition-colors ${
+              activeTab === 'register'
+                ? 'text-[#dc2626] border-b-2 border-[#dc2626]'
+                : 'text-[#86868b] hover:text-[#1d1d1f]'
             }`}
           >
-            Crear Nueva Cuenta
+            <UserPlus size={16} />
+            Crear Cuenta
           </button>
         </div>
 
-        {/* Formulario */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {error && (
-            <div className="p-3.5 rounded-xl bg-red-500/15 border border-red-500/30 text-red-300 text-xs flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{error}</span>
+            <div className="flex items-start gap-3 p-4 bg-red-50 rounded-xl">
+              <AlertCircle size={18} className="text-red-600 mt-0.5 shrink-0" />
+              <p className="text-sm text-red-600">{error}</p>
             </div>
           )}
 
-          <div>
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-              Nombre de Usuario
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium uppercase tracking-wider text-gray-500">
+              Usuario
             </label>
             <div className="relative">
-              <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                <User size={16} className="text-[#86868b]" />
+              </div>
               <input
                 type="text"
-                required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Tu nombre o apodo"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.1] text-white placeholder-slate-500 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                placeholder="Tu nombre de usuario"
+                className="w-full pl-10 pr-4 py-3 text-sm text-[#1d1d1f] placeholder-gray-400 bg-gray-100 border border-gray-200 rounded-xl outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
+                autoComplete="username"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium uppercase tracking-wider text-gray-500">
               Contraseña
             </label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
+                <Lock size={16} className="text-[#86868b]" />
+              </div>
               <input
                 type="password"
-                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.1] text-white placeholder-slate-500 text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                placeholder="Tu contraseña"
+                className="w-full pl-10 pr-4 py-3 text-sm text-[#1d1d1f] placeholder-gray-400 bg-gray-100 border border-gray-200 rounded-xl outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all"
+                autoComplete={activeTab === 'login' ? 'current-password' : 'new-password'}
               />
             </div>
-            <p className="text-[11px] text-slate-500 mt-1.5">
-              Tu sesión se mantendrá iniciada en este móvil o PC.
-            </p>
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-2 py-3 px-4 rounded-xl text-xs font-black text-black bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 shadow-lg shadow-orange-500/25 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2 py-3 text-sm font-semibold text-white bg-[#dc2626] hover:bg-[#b91c1c] disabled:opacity-50 disabled:cursor-not-allowed transition-colors rounded-xl"
           >
-            {isRegister ? <UserPlus className="w-4 h-4" /> : <LogIn className="w-4 h-4" />}
-            <span>{loading ? 'Entrando...' : (isRegister ? 'Crear mi cuenta' : 'Entrar ahora')}</span>
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ) : (
+              <>
+                {activeTab === 'login' ? <LogIn size={16} /> : <UserPlus size={16} />}
+                {activeTab === 'login' ? 'Iniciar Sesión' : 'Crear Cuenta'}
+              </>
+            )}
           </button>
 
+          <p className="text-center text-xs text-[#86868b]">
+            Tu sesión se mantendrá iniciada en este dispositivo.
+          </p>
         </form>
-
       </div>
     </div>
   );
-}
+};
+
+export default AuthModal;

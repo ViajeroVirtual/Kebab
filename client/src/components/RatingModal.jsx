@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Star, Save, AlertCircle } from 'lucide-react';
-import { CRITERIA_CONFIG, calculateFormulaScore, calculateContribution, getScoreBadgeColor } from '../utils/formula';
+import { CRITERIA_CONFIG, calculateFormulaScore, calculateContribution } from '../utils/formula';
 
 export default function RatingModal({ kebab, existingRating, onClose, onSave }) {
   const [scores, setScores] = useState({
@@ -57,89 +57,84 @@ export default function RatingModal({ kebab, existingRating, onClose, onSave }) 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+      onClick={onClose}
+    >
       <div 
-        className="relative w-full max-w-lg bg-surface-100 border border-surface-border rounded-2xl shadow-2xl overflow-hidden"
+        className="relative w-full max-w-lg bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]"
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Header */}
-        <div className="p-5 border-b border-surface-border flex items-center justify-between bg-surface-50">
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-brand-400">
-              Puntuar Kebab
+            <span className="text-xs font-semibold uppercase tracking-wider text-red-600">
+              Valorar
             </span>
-            <h3 className="text-xl font-bold text-white line-clamp-1">
+            <h3 className="text-xl font-bold text-[#1d1d1f] line-clamp-1 mt-0.5">
               {kebab.name}
             </h3>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-surface-200"
+            className="p-2 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="p-5 space-y-5 max-h-[80vh] overflow-y-auto">
+        {/* Form Body */}
+        <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto flex-1">
           
-          {/* Live Score Preview Banner */}
-          <div className="p-4 rounded-xl bg-surface-200/90 border border-surface-border flex items-center justify-between">
+          {/* Live Score Preview */}
+          <div className="p-4 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-between">
             <div>
-              <span className="text-xs text-slate-300 font-semibold">Nota final calculada:</span>
-              <p className="text-[11px] text-slate-400 mt-0.5">
-                Kebab (6 pts) + Ubicación (1) + Atención (1) + Precio (1) + Presentación (1)
+              <span className="text-xs font-medium text-gray-600">Nota final calculada</span>
+              <p className="text-[11px] text-gray-400 mt-0.5">
+                Kebab (6 pts) + Ubicación (1) + Atención (1) + Precio (1) + Local (1)
               </p>
             </div>
 
-            <div className={`px-4 py-2 rounded-xl border flex items-center gap-1.5 text-2xl font-black ${getScoreBadgeColor(liveFinalScore)}`}>
+            <div className="px-4 py-2 rounded-xl bg-red-600 text-white flex items-center gap-1.5 text-2xl font-bold shadow-sm">
               <Star className="w-5 h-5 fill-current" />
               <span>{liveFinalScore.toFixed(1)}</span>
             </div>
           </div>
 
           {error && (
-            <div className="p-3 rounded-lg bg-red-500/15 border border-red-500/30 text-xs text-red-300 flex items-center gap-2">
+            <div className="p-3.5 rounded-xl bg-red-50 border border-red-100 text-xs text-red-600 flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
-          {/* Criteria Sliders (0 to 10 input -> automatic conversion) */}
+          {/* Criteria Sliders */}
           <div className="space-y-4">
             {CRITERIA_CONFIG.map(crit => {
               const currentVal = scores[crit.id];
               const contrib = calculateContribution(currentVal, crit.maxPoints);
 
               return (
-                <div key={crit.id} className="p-3.5 rounded-xl bg-surface-50 border border-surface-border/70 space-y-2">
+                <div key={crit.id} className="p-4 rounded-xl bg-gray-50/70 border border-gray-200/80 space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">{crit.icon}</span>
-                      <div>
-                        <span className="text-sm font-bold text-white">{crit.label}</span>
-                        <span className="text-[11px] text-brand-400 font-medium ml-2">
-                          (Vale {crit.weightLabel})
-                        </span>
-                      </div>
+                    <div>
+                      <span className="text-sm font-semibold text-[#1d1d1f]">{crit.label}</span>
+                      <span className="text-xs text-gray-400 ml-2">
+                        (hasta {crit.maxPoints} pts)
+                      </span>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      {/* Puntuación de 0 a 10 elegida */}
-                      <span className="text-xs text-slate-400 font-medium">Nota:</span>
-                      <div className="text-sm font-black text-white px-2 py-0.5 rounded bg-surface-200 border border-surface-border">
-                        {currentVal.toFixed(1)} / 10
-                      </div>
+                    <div className="text-sm font-bold text-red-600 px-2 py-0.5 rounded bg-white border border-gray-200 shadow-sm">
+                      {currentVal.toFixed(1)} / 10
                     </div>
                   </div>
 
-                  {/* Sub-label showing contribution */}
-                  <div className="flex items-center justify-between text-[11px] text-slate-400 bg-surface-100/80 px-2.5 py-1 rounded-lg border border-surface-border/50">
+                  <div className="flex items-center justify-between text-[11px] text-gray-500">
                     <span>{crit.description}</span>
-                    <span className="font-bold text-brand-300">
-                      Suma: +{contrib.toFixed(2)} / {crit.maxPoints.toFixed(1)}
+                    <span className="font-semibold text-gray-700">
+                      Suma: +{contrib.toFixed(2)} pts
                     </span>
                   </div>
 
@@ -150,39 +145,39 @@ export default function RatingModal({ kebab, existingRating, onClose, onSave }) 
                     step="0.1"
                     value={currentVal}
                     onChange={(e) => handleSliderChange(crit.id, e.target.value)}
-                    className="w-full cursor-pointer accent-brand-500"
+                    className="w-full cursor-pointer"
                   />
                   
-                  <div className="flex justify-between text-[10px] text-slate-500">
-                    <span>0 (Suspenso)</span>
-                    <span>5 (Normalito)</span>
-                    <span>10 (Perfecto)</span>
+                  <div className="flex justify-between text-[10px] text-gray-400">
+                    <span>0</span>
+                    <span>5</span>
+                    <span>10</span>
                   </div>
                 </div>
               );
             })}
           </div>
 
-          {/* Personal comment / review */}
+          {/* Comment */}
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+            <label className="block text-xs font-medium uppercase tracking-wider text-gray-500 mb-1.5">
               Comentario u opinión personal (opcional)
             </label>
             <textarea
               rows="3"
               value={comment}
               onChange={(e) => setComment(e.target.value)}
-              placeholder="¿Qué tal la carne? ¿La atención del moro fue buena? ¿Tardó mucho?"
-              className="w-full px-3 py-2 text-sm bg-surface-50 border border-surface-border rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-brand-500 transition-colors resize-none"
+              placeholder="¿Qué tal el pan, la carne, las salsas o el trato?"
+              className="w-full px-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl text-[#1d1d1f] placeholder-gray-400 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/20 transition-all resize-none"
             />
           </div>
 
           {/* Footer Submit */}
-          <div className="pt-2 flex items-center justify-end gap-3 border-t border-surface-border">
+          <div className="pt-3 flex items-center justify-end gap-3 border-t border-gray-100">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-400 hover:text-white hover:bg-surface-200"
+              className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
             >
               Cancelar
             </button>
@@ -190,7 +185,7 @@ export default function RatingModal({ kebab, existingRating, onClose, onSave }) 
             <button
               type="submit"
               disabled={submitting}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-500 shadow-lg shadow-brand-500/20 disabled:opacity-50 transition-all"
+              className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold text-white bg-red-600 hover:bg-red-700 shadow-sm disabled:opacity-50 transition-colors"
             >
               <Save className="w-4 h-4" />
               <span>{submitting ? 'Guardando...' : (existingRating ? 'Actualizar Nota' : 'Guardar Puntuación')}</span>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import Header from './components/Header';
-import Podium from './components/Podium';
 import KebabCard from './components/KebabCard';
 import KebabDetailModal from './components/KebabDetailModal';
 import RatingModal from './components/RatingModal';
@@ -9,7 +8,7 @@ import ProfileModal from './components/ProfileModal';
 import AddKebabModal from './components/AddKebabModal';
 import FormulaInfoModal from './components/FormulaInfoModal';
 import { useAuth } from './context/AuthContext';
-import { Search, Flame, Trophy, Award, Filter, RefreshCw, MapPin } from 'lucide-react';
+import { Search, Filter, Star, MapPin } from 'lucide-react';
 
 export default function App() {
   const { user, token } = useAuth();
@@ -20,7 +19,7 @@ export default function App() {
   const [selectedZone, setSelectedZone] = useState('Todos');
   const [sortBy, setSortBy] = useState('rating'); // 'rating' | 'votes' | 'name'
 
-  // Modales
+  // Modals state
   const [selectedKebab, setSelectedKebab] = useState(null);
   const [ratingKebab, setRatingKebab] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -28,7 +27,7 @@ export default function App() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showFormulaModal, setShowFormulaModal] = useState(false);
 
-  // Cargar Kebabs desde la API
+  // Fetch Kebabs from Backend
   const fetchKebabs = async () => {
     try {
       setLoading(true);
@@ -53,7 +52,7 @@ export default function App() {
     fetchKebabs();
   }, []);
 
-  // Guardar puntuación
+  // Guardar o actualizar puntuación
   const handleSaveRating = async (ratingPayload) => {
     if (!token) {
       setShowAuthModal(true);
@@ -77,7 +76,7 @@ export default function App() {
     await fetchKebabs();
   };
 
-  // Eliminar puntuación
+  // Eliminar puntuación propia
   const handleDeleteRating = async (kebabId) => {
     if (!token) return;
     try {
@@ -123,15 +122,7 @@ export default function App() {
     return ['Todos', ...Array.from(list)];
   }, [kebabs]);
 
-  // Kebabs ordenados por rating para el Podio
-  const topKebabs = useMemo(() => {
-    return [...kebabs]
-      .filter(k => k.average_score !== null)
-      .sort((a, b) => b.average_score - a.average_score)
-      .slice(0, 3);
-  }, [kebabs]);
-
-  // Filtrado y Ordenación general
+  // Filtrado y Ordenación
   const filteredKebabs = useMemo(() => {
     return kebabs
       .filter(k => {
@@ -163,19 +154,21 @@ export default function App() {
   // Estadísticas globales
   const stats = useMemo(() => {
     const totalVotes = kebabs.reduce((acc, k) => acc + (k.ratings?.length || 0), 0);
-    const topKebab = topKebabs[0] || null;
+    const topKebab = [...kebabs]
+      .filter(k => k.average_score !== null)
+      .sort((a, b) => b.average_score - a.average_score)[0];
 
     const myVotesCount = user
       ? kebabs.reduce((acc, k) => acc + (k.ratings?.some(r => r.user_id === user.id) ? 1 : 0), 0)
       : 0;
 
     return { totalVotes, topKebab, myVotesCount };
-  }, [kebabs, topKebabs, user]);
+  }, [kebabs, user]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0c10] text-slate-100 font-sans selection:bg-orange-500 selection:text-black">
+    <div className="min-h-screen flex flex-col bg-white text-[#1d1d1f] antialiased">
       
-      {/* Header con nuevo logo */}
+      {/* Header */}
       <Header
         onOpenAuth={() => setShowAuthModal(true)}
         onOpenProfile={() => setShowProfileModal(true)}
@@ -183,101 +176,99 @@ export default function App() {
         onOpenFormula={() => setShowFormulaModal(true)}
       />
 
-      {/* Main Container */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 py-8 space-y-8">
-        
-        {/* Hero Banner Urbano */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#171924] via-[#141620] to-[#0f1118] border border-white/[0.08] p-6 sm:p-10 shadow-2xl">
-          <div className="absolute -right-10 -bottom-10 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute left-1/3 -top-10 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Hero Section — Minimal Apple / Samsung Style */}
+      <section className="border-b border-gray-100 bg-[#fafafa]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14 sm:py-20 text-center">
+          <span className="inline-block text-xs font-semibold uppercase tracking-widest text-red-600 mb-3">
+            Guía Oficial • Algeciras
+          </span>
+          <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-[#1d1d1f] max-w-3xl mx-auto leading-tight">
+            Los mejores kebabs, clasificados con precisión.
+          </h1>
+          <p className="mt-4 text-base sm:text-lg text-[#86868b] max-w-xl mx-auto leading-relaxed">
+            Evaluaciones objetivas por criterios: calidad de carne, salsas, atención, precio y local.
+          </p>
 
-          <div className="relative z-10 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-orange-500/20 to-amber-500/20 text-orange-400 border border-orange-500/30 text-xs font-bold mb-4 shadow-sm">
-              <Flame className="w-4 h-4 text-orange-400 animate-pulse" />
-              <span>La Ruta del Kebab de Algeciras • Ranking Oficial</span>
+          {/* Key Metrics */}
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-8 sm:gap-14 text-center">
+            <div>
+              <span className="block text-3xl sm:text-4xl font-bold text-[#1d1d1f]">
+                {kebabs.length}
+              </span>
+              <span className="text-xs text-[#86868b] uppercase tracking-wider font-medium mt-0.5 block">
+                Locales Registrados
+              </span>
             </div>
-            
-            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
-              ¿Cuál es el mejor kebab de <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-500 to-red-500">Algeciras</span>?
-            </h1>
-            
-            <p className="mt-3 text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl font-normal">
-              Puntuaciones milimétricas entre colegas: carne y durum (sobre 6), salsas, atención, calidad-precio y local. Encuentra el sitio perfecto y navega directo con Google Maps.
-            </p>
 
-            {/* Estadísticas rápidas en pills */}
-            <div className="mt-6 flex flex-wrap items-center gap-3">
-              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-xs font-semibold backdrop-blur-sm">
-                <span className="text-slate-400">Locales registrados:</span>
-                <span className="font-black text-white">{kebabs.length}</span>
-              </div>
+            <div className="w-px h-10 bg-gray-200 hidden sm:block" />
 
-              <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-xs font-semibold backdrop-blur-sm">
-                <span className="text-slate-400">Veredictos emitidos:</span>
-                <span className="font-black text-orange-400">{stats.totalVotes}</span>
-              </div>
+            <div>
+              <span className="block text-3xl sm:text-4xl font-bold text-red-600">
+                {stats.totalVotes}
+              </span>
+              <span className="text-xs text-[#86868b] uppercase tracking-wider font-medium mt-0.5 block">
+                Valoraciones
+              </span>
+            </div>
 
-              {stats.topKebab && (
-                <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs text-amber-300 backdrop-blur-sm">
-                  <Trophy className="w-4 h-4 text-amber-400" />
-                  <span className="text-slate-300">#1 Actual:</span>
-                  <span className="font-black text-white truncate max-w-[150px]">{stats.topKebab.name}</span>
-                  <span className="font-black text-amber-400">({stats.topKebab.average_score?.toFixed(1)})</span>
+            {stats.topKebab && (
+              <>
+                <div className="w-px h-10 bg-gray-200 hidden sm:block" />
+                <div>
+                  <div className="flex items-center justify-center gap-1.5">
+                    <Star className="w-5 h-5 text-red-600 fill-current" />
+                    <span className="text-3xl sm:text-4xl font-bold text-[#1d1d1f]">
+                      {stats.topKebab.average_score?.toFixed(1)}
+                    </span>
+                  </div>
+                  <span className="text-xs text-[#86868b] uppercase tracking-wider font-medium mt-0.5 block truncate max-w-[180px]">
+                    N.º 1: {stats.topKebab.name}
+                  </span>
                 </div>
-              )}
-            </div>
+              </>
+            )}
           </div>
         </div>
+      </section>
 
-        {/* PODIUM TOP 3 (Solo cuando no se está buscando texto específico) */}
-        {!searchTerm && selectedZone === 'Todos' && topKebabs.length >= 3 && (
-          <Podium
-            topKebabs={topKebabs}
-            onKebabClick={(k) => setSelectedKebab(k)}
-          />
-        )}
-
-        {/* Barra de Filtros y Búsqueda */}
-        <div className="space-y-4 pt-2">
-          
-          {/* Fila 1: Buscador y Ordenador */}
+      {/* Main Content */}
+      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-10 space-y-8">
+        
+        {/* Controls: Search, Sort & Zones */}
+        <div className="space-y-4">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            {/* Buscador */}
+            {/* Search Input */}
             <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Buscar kebab por nombre o zona (ej: Dchiqui, Isla Verde, Palomas...)"
-                className="w-full pl-11 pr-4 py-3 text-sm bg-white/[0.04] border border-white/[0.1] rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
+                placeholder="Buscar por nombre o zona..."
+                className="w-full pl-10 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl text-[#1d1d1f] placeholder-gray-400 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500/20 transition-all"
               />
             </div>
 
-            {/* Selector de ordenación */}
+            {/* Sort Selector */}
             <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 px-4 py-3 bg-white/[0.04] border border-white/[0.1] rounded-2xl text-xs font-bold text-slate-300">
-                <Filter className="w-4 h-4 text-orange-400" />
-                <span className="text-slate-400 hidden sm:inline">Ordenar:</span>
+              <div className="flex items-center gap-2 px-3.5 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-medium text-gray-600">
+                <Filter className="w-3.5 h-3.5 text-gray-400" />
+                <span className="hidden sm:inline">Ordenar:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="bg-transparent text-white font-extrabold focus:outline-none cursor-pointer"
+                  className="bg-transparent text-[#1d1d1f] font-semibold focus:outline-none cursor-pointer"
                 >
-                  <option value="rating" className="bg-[#161822] text-white">⭐ Mayor Puntuación</option>
-                  <option value="votes" className="bg-[#161822] text-white">🔥 Más Votados</option>
-                  <option value="name" className="bg-[#161822] text-white">🔤 Nombre A-Z</option>
+                  <option value="rating">Puntuación</option>
+                  <option value="votes">Más Valorados</option>
+                  <option value="name">Nombre</option>
                 </select>
               </div>
             </div>
           </div>
 
-          {/* Fila 2: Chips de Zonas (Elegante y desplazable) */}
+          {/* Zone Filter Chips */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider pl-1 pr-2 flex items-center gap-1 shrink-0">
-              <MapPin className="w-3.5 h-3.5 text-orange-400" />
-              Zona:
-            </span>
             {zones.map(zone => {
               const count = zone === 'Todos' ? kebabs.length : kebabs.filter(k => k.zone === zone).length;
               const isSelected = selectedZone === zone;
@@ -286,15 +277,15 @@ export default function App() {
                 <button
                   key={zone}
                   onClick={() => setSelectedZone(zone)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all flex items-center gap-2 shrink-0 ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex items-center gap-2 shrink-0 ${
                     isSelected
-                      ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-black shadow-md shadow-orange-500/20'
-                      : 'bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/[0.08]'
+                      ? 'bg-red-600 text-white'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   }`}
                 >
                   <span>{zone}</span>
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-md font-black ${
-                    isSelected ? 'bg-black/20 text-black' : 'bg-black/40 text-slate-400'
+                  <span className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                    isSelected ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-500'
                   }`}>
                     {count}
                   </span>
@@ -302,22 +293,13 @@ export default function App() {
               );
             })}
           </div>
-
         </div>
 
-        {/* Encabezado del Listado */}
-        <div className="flex items-center justify-between pt-2">
-          <h2 className="text-lg font-black text-white tracking-tight flex items-center gap-2">
-            <span>Todos los Kebabs</span>
-            <span className="text-xs text-slate-400 font-semibold">({filteredKebabs.length} de {kebabs.length})</span>
-          </h2>
-        </div>
-
-        {/* Grid de Kebabs */}
+        {/* Kebabs Grid */}
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1, 2, 3, 4, 5, 6].map(i => (
-              <div key={i} className="h-80 rounded-3xl bg-white/[0.02] border border-white/[0.06] animate-pulse" />
+              <div key={i} className="h-80 rounded-2xl bg-gray-50 animate-pulse border border-gray-100" />
             ))}
           </div>
         ) : filteredKebabs.length > 0 ? (
@@ -340,35 +322,34 @@ export default function App() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-16 px-4 rounded-3xl bg-white/[0.02] border border-dashed border-white/[0.08]">
-            <span className="text-4xl block mb-3">🔍</span>
-            <h3 className="text-base font-bold text-white">
-              No se han encontrado kebabs con ese filtro
+          <div className="text-center py-20 px-4 rounded-2xl bg-gray-50 border border-gray-100">
+            <h3 className="text-base font-semibold text-[#1d1d1f]">
+              No se han encontrado resultados
             </h3>
-            <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
-              Prueba a buscar con otro término o selecciona "Todos" en las zonas.
+            <p className="text-xs text-[#86868b] mt-1 max-w-sm mx-auto">
+              Prueba con otro término de búsqueda o selecciona otra zona.
             </p>
           </div>
         )}
 
       </main>
 
-      {/* Footer Oficial Limpio (Sin menciones técnicas ni de Render) */}
-      <footer className="border-t border-white/[0.08] bg-[#0c0d12] py-8 text-center text-xs text-slate-400 mt-12">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      {/* Minimal Footer */}
+      <footer className="border-t border-gray-100 bg-white py-8 text-xs text-[#86868b]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="font-black text-white text-sm">AlgeKebab</span>
-            <span className="text-[11px] text-slate-500">•</span>
-            <span className="text-xs text-slate-400">La Ruta Oficial del Kebab de Algeciras entre amigos</span>
+            <span className="font-semibold text-[#1d1d1f]">AlgeKebab</span>
+            <span>•</span>
+            <span>Algeciras</span>
           </div>
 
-          <p className="text-xs text-slate-500">
-            Hecho por y para los de la comarca. 🌯
+          <p className="text-gray-400">
+            © {new Date().getFullYear()} AlgeKebab. Todos los derechos reservados.
           </p>
         </div>
       </footer>
 
-      {/* MODALES */}
+      {/* Modals */}
       {selectedKebab && (
         <KebabDetailModal
           kebab={selectedKebab}
