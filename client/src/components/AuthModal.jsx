@@ -105,7 +105,7 @@ export default function AuthModal({ onClose }) {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Ej. pablo_algeciras"
+                placeholder="Tu nombre de usuario"
                 required
                 className="w-full pl-10 pr-4 py-2.5 text-sm bg-surface border border-neutral-200 rounded-xl text-ink placeholder-ink-muted/60 focus:outline-none focus:bg-white focus:border-brand-600 focus:ring-2 focus:ring-brand-600/15 transition-all"
               />

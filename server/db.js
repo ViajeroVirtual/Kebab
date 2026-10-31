@@ -127,16 +127,16 @@ function readLocalDb() {
 
   if (!fs.existsSync(localDbPath)) {
     const salt = bcrypt.genSaltSync(10);
-    const pabloHash = bcrypt.hashSync('pablo123', salt);
-    const marcosHash = bcrypt.hashSync('marcos123', salt);
+    const viajeroHash = bcrypt.hashSync('viajero123', salt);
+    const marcosHash = bcrypt.hashSync('Marcos123', salt);
 
     const initialData = {
       users: [
         {
           id: 1,
-          username: 'Pablo',
-          display_name: 'Pablo',
-          password_hash: pabloHash,
+          username: 'Viajero',
+          display_name: 'Viajero',
+          password_hash: viajeroHash,
           avatar_color: '#f97316',
           created_at: new Date().toISOString()
         },
