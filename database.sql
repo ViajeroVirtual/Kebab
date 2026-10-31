@@ -70,7 +70,7 @@ INSERT INTO kebabs (id, name, address, zone, google_maps_url, description, image
     'Zona Puerto / Isla Verde',
     'https://maps.google.com/?q=La+Isla+Comida+Rapida+Algeciras',
     'Mítico punto de reunión con dürüms bien cargados, shawarma y opciones clásicas.',
-    'https://images.unsplash.com/photo-1529006557810-274b9b2fc783?auto=format&fit=crop&w=800&q=80'
+    'https://img02.restaurantguru.com/c6fa-La-Isla-Comida-Rapida-Algeciras-meals.jpg'
 ),
 (
     2,
@@ -79,7 +79,7 @@ INSERT INTO kebabs (id, name, address, zone, google_maps_url, description, image
     'Las Palomas',
     'https://maps.google.com/?q=Kebab+Dchiqui+Algeciras',
     'Considerado por muchos de los mejores de Algeciras y Campo de Gibraltar. Salsas caseras insuperables.',
-    'https://images.unsplash.com/photo-1561651823-34feb02250e4?auto=format&fit=crop&w=800&q=80'
+    'https://img3.restaurantguru.com/rests/original/104_569580233.jpg'
 ),
 (
     3,
@@ -88,7 +88,7 @@ INSERT INTO kebabs (id, name, address, zone, google_maps_url, description, image
     'Zona Puerto / Centro',
     'https://maps.google.com/?q=Turkish+Kebab+Algeciras',
     'Gran cantidad de carne sabrosa y salsa picante auténtica muy potente.',
-    'https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=800&q=80'
+    'https://lh3.googleusercontent.com/p/AF1QipNTcWwsOvowsms3d2_lnKHIOfY91Z3IO8JDexDh'
 ),
 (
     4,
@@ -97,7 +97,7 @@ INSERT INTO kebabs (id, name, address, zone, google_maps_url, description, image
     'Zona Puerto',
     'https://maps.google.com/?q=King+Doner+Kebab+Algeciras',
     'Destaca por sus patatas fritas naturales e ingredientes frescos que marcan la diferencia.',
-    'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=800&q=80'
+    'https://d1e4mqw8kzyykz.cloudfront.net/img/auto/king-doner-kebab--pizzeria-6y48nx2t-banner.jpg'
 ),
 (
     5,
@@ -106,7 +106,7 @@ INSERT INTO kebabs (id, name, address, zone, google_maps_url, description, image
     'Getares / San García',
     'https://maps.google.com/?q=Mi+Casa+Doner+Kebab+Getares+Algeciras',
     'Perfecto para cenar frente a la playa o en la zona sur. Dürüms y bandejas con queso.',
-    'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80'
+    'https://res.cloudinary.com/just-eat-prod-eu/image/upload/c_thumb,w_800,h_500/f_auto/q_auto/v1/es/restaurants/87520'
 ),
 (
     6,
@@ -115,7 +115,7 @@ INSERT INTO kebabs (id, name, address, zone, google_maps_url, description, image
     'Puerta Europa',
     'https://maps.google.com/?q=Original+Kebab+Puerta+Europa+Algeciras',
     'Ideal tras tarde de compras o cine. Menús completos de dürum y platos turcos.',
-    'https://images.unsplash.com/photo-1541592106381-b31e9677c0e5?auto=format&fit=crop&w=800&q=80'
+    'https://ccpuertaeuropa.com/wp-content/uploads/2024/02/ORIGINAL_KEBAB_mobile.jpg'
 ),
 (
     7,
@@ -124,7 +124,7 @@ INSERT INTO kebabs (id, name, address, zone, google_maps_url, description, image
     'Zona Puerto / Bajadilla',
     'https://maps.google.com/?q=El+Palacio+Comida+Rapida+Algeciras',
     'Shawarmas sabrosos, camperos y especialidades con trato muy cercano y limpio.',
-    'https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80'
+    'https://img3.restaurantguru.com/w550/h367/r240-El-palacio-comida-rapida-interior.jpg'
 ),
 (
     8,
@@ -133,7 +133,7 @@ INSERT INTO kebabs (id, name, address, zone, google_maps_url, description, image
     'San García / Europa',
     'https://maps.google.com/?q=Tasty+Algeciras',
     'Fusión de tacos franceses con salsa de queso y döner kebab con toque moderno.',
-    'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=800&q=80'
+    'https://static.wixstatic.com/media/81c17f_64d248d315f946b186887b41d1960d81~mv2.jpeg'
 )
 ON CONFLICT (id) DO NOTHING;
 
