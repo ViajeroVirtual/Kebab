@@ -140,10 +140,16 @@ export default function KebabDetailModal({ kebab, onClose, onRateClick, currentU
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex items-center gap-3 min-w-0">
                           <div
-                            className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white uppercase shrink-0"
+                            className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm text-white uppercase shrink-0 overflow-hidden shadow-sm"
                             style={{ backgroundColor: rating.avatar_color || '#DC2626' }}
                           >
-                            {rating.username ? rating.username.slice(0, 1) : '?'}
+                            {rating.avatar_url && (rating.avatar_url.startsWith('http') || rating.avatar_url.startsWith('data:image')) ? (
+                              <img src={rating.avatar_url} alt={rating.username} className="w-full h-full object-cover" />
+                            ) : rating.avatar_url ? (
+                              <span className="text-base leading-none">{rating.avatar_url}</span>
+                            ) : (
+                              rating.username ? rating.username.slice(0, 1) : '?'
+                            )}
                           </div>
                           <div className="min-w-0">
                             <div className="flex items-center gap-2">

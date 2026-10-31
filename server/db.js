@@ -260,11 +260,11 @@ async function findUserByUsername(username) {
 // 2. Obtener usuario por ID
 async function findUserById(id) {
   if (dbMode === 'supabase') {
-    const { data, error } = await supabase.from('users').select('id, username, display_name, avatar_color, created_at').eq('id', id).single();
+    const { data, error } = await supabase.from('users').select('id, username, display_name, avatar_color, avatar_url, created_at').eq('id', id).single();
     return data || null;
   }
   if (dbMode === 'postgres') {
-    const res = await pool.query('SELECT id, username, display_name, avatar_color, created_at FROM users WHERE id = $1', [id]);
+    const res = await pool.query('SELECT id, username, display_name, avatar_color, avatar_url, created_at FROM users WHERE id = $1', [id]);
     return res.rows[0] || null;
   }
   const db = readLocalDb();
@@ -272,6 +272,20 @@ async function findUserById(id) {
   if (!u) return null;
   const { password_hash, ...safe } = u;
   return safe;
+}
+
+// 2.1. Obtener usuario por ID incluyendo password_hash para comprobaciones seguras
+async function findUserByIdWithPassword(id) {
+  if (dbMode === 'supabase') {
+    const { data } = await supabase.from('users').select('*').eq('id', id).single();
+    return data || null;
+  }
+  if (dbMode === 'postgres') {
+    const res = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+    return res.rows[0] || null;
+  }
+  const db = readLocalDb();
+  return db.users.find(u => u.id === id) || null;
 }
 
 // 3. Crear usuario
@@ -308,8 +322,8 @@ async function createUser({ username, display_name, password_hash, avatar_color 
   return safe;
 }
 
-// 4. Actualizar usuario (nombre o contraseña)
-async function updateUser(id, { username, password_hash }) {
+// 4. Actualizar usuario (nombre, contraseña, color o avatar)
+async function updateUser(id, { username, password_hash, avatar_color, avatar_url }) {
   if (dbMode === 'supabase') {
     const updates = {};
     if (username) {
@@ -317,11 +331,13 @@ async function updateUser(id, { username, password_hash }) {
       updates.display_name = username;
     }
     if (password_hash) updates.password_hash = password_hash;
+    if (avatar_color) updates.avatar_color = avatar_color;
+    if (avatar_url !== undefined) updates.avatar_url = avatar_url;
     const { data, error } = await supabase
       .from('users')
       .update(updates)
       .eq('id', id)
-      .select('id, username, display_name, avatar_color, created_at')
+      .select('id, username, display_name, avatar_color, avatar_url, created_at')
       .single();
     if (error) throw new Error(error.message);
     return data;
@@ -340,8 +356,22 @@ async function updateUser(id, { username, password_hash }) {
       vals.push(password_hash);
       idx++;
     }
+    if (avatar_color) {
+      fields.push(`avatar_color = $${idx}`);
+      vals.push(avatar_color);
+      idx++;
+    }
+    if (avatar_url !== undefined) {
+      fields.push(`avatar_url = $${idx}`);
+      vals.push(avatar_url);
+      idx++;
+    }
+    if (fields.length === 0) {
+      const current = await pool.query('SELECT id, username, display_name, avatar_color, avatar_url, created_at FROM users WHERE id = $1', [id]);
+      return current.rows[0];
+    }
     vals.push(id);
-    const q = `UPDATE users SET ${fields.join(', ')} WHERE id = $${idx} RETURNING id, username, display_name, avatar_color, created_at`;
+    const q = `UPDATE users SET ${fields.join(', ')} WHERE id = $${idx} RETURNING id, username, display_name, avatar_color, avatar_url, created_at`;
     const res = await pool.query(q, vals);
     return res.rows[0];
   }
@@ -353,6 +383,8 @@ async function updateUser(id, { username, password_hash }) {
     u.display_name = username;
   }
   if (password_hash) u.password_hash = password_hash;
+  if (avatar_color) u.avatar_color = avatar_color;
+  if (avatar_url !== undefined) u.avatar_url = avatar_url;
   writeLocalDb(db);
   const { password_hash: _, ...safe } = u;
   return safe;
@@ -394,7 +426,7 @@ async function getAllKebabsWithRatings() {
   if (dbMode === 'postgres') {
     const kebabsRes = await pool.query('SELECT * FROM kebabs ORDER BY id ASC');
     const ratingsRes = await pool.query(`
-      SELECT r.*, u.username, u.display_name, u.avatar_color
+      SELECT r.*, u.username, u.display_name, u.avatar_color, u.avatar_url
       FROM ratings r
       JOIN users u ON r.user_id = u.id
       ORDER BY r.created_at DESC
@@ -548,6 +580,7 @@ module.exports = {
   initDb,
   findUserByUsername,
   findUserById,
+  findUserByIdWithPassword,
   createUser,
   updateUser,
   getAllKebabsWithRatings,

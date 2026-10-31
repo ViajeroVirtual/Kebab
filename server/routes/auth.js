@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const {
   findUserByUsername,
   findUserById,
+  findUserByIdWithPassword,
   createUser,
   updateUser
 } = require('../db');
@@ -115,23 +116,22 @@ router.get('/me', authenticateToken, async (req, res) => {
 // 4. Actualizar perfil
 router.put('/profile', authenticateToken, async (req, res) => {
   try {
-    const { new_username, new_password, current_password } = req.body;
+    const { new_username, new_password, current_password, avatar_color, avatar_url } = req.body;
     const userId = req.user.id;
 
-    const user = await findUserById(userId);
-    if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
+    const userWithPass = await findUserByIdWithPassword(userId);
+    if (!userWithPass) return res.status(404).json({ error: 'Usuario no encontrado' });
 
-    // Si envía current_password verificarla
+    // Si envía current_password, verificarla
     if (current_password) {
-      const fullUser = await findUserByUsername(user.username);
-      const valid = await bcrypt.compare(current_password, fullUser.password_hash);
+      const valid = await bcrypt.compare(current_password, userWithPass.password_hash);
       if (!valid) return res.status(400).json({ error: 'La contraseña actual no es correcta.' });
     }
 
-    let updatedUsername = user.username;
+    let updatedUsername = userWithPass.username;
     let updatedHash = undefined;
 
-    if (new_username && new_username.trim() !== user.username) {
+    if (new_username && new_username.trim() !== userWithPass.username) {
       const cleanNew = new_username.trim();
       const check = await findUserByUsername(cleanNew);
       if (check && check.id !== userId) {
@@ -147,11 +147,13 @@ router.put('/profile', authenticateToken, async (req, res) => {
 
     const updated = await updateUser(userId, {
       username: updatedUsername,
-      password_hash: updatedHash
+      password_hash: updatedHash,
+      avatar_color: avatar_color || undefined,
+      avatar_url: avatar_url !== undefined ? avatar_url : undefined
     });
 
     const newToken = jwt.sign({ id: userId, username: updatedUsername }, JWT_SECRET, { expiresIn: '365d' });
-    return res.json({ user: updated, token: newToken, message: 'Perfil actualizado correctamente.' });
+    return res.json({ user: updated, token: newToken, message: 'Perfil actualizado con éxito.' });
   } catch (err) {
     console.error('Error updating profile:', err);
     res.status(500).json({ error: 'Error al actualizar el perfil.' });

@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
     password_hash VARCHAR(255) NOT NULL,
     display_name VARCHAR(100),
     avatar_color VARCHAR(20) DEFAULT '#f59e0b',
+    avatar_url TEXT,
     is_hidden BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

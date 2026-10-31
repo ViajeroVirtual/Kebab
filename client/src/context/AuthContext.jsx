@@ -85,14 +85,14 @@ export function AuthProvider({ children }) {
     return data.user;
   };
 
-  const updateProfile = async ({ new_username, new_password, current_password }) => {
+  const updateProfile = async ({ new_username, new_password, current_password, avatar_color, avatar_url }) => {
     const res = await fetch('/api/auth/profile', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify({ new_username, new_password, current_password })
+      body: JSON.stringify({ new_username, new_password, current_password, avatar_color, avatar_url })
     });
 
     const data = await res.json();

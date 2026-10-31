@@ -43,10 +43,18 @@ export default function Header({ onOpenFormula, onOpenAddKebab, onOpenProfile, o
                 className="inline-flex items-center gap-2 pl-1.5 pr-3 py-1 rounded-full bg-neutral-100 hover:bg-neutral-200/80 text-ink text-xs sm:text-sm font-semibold transition-colors"
               >
                 <span
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold uppercase shadow-sm"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold uppercase shadow-sm overflow-hidden"
                   style={{ backgroundColor: user.avatar_color || '#DC2626' }}
                 >
-                  {user.username ? user.username.charAt(0) : <User className="w-3.5 h-3.5"/>}
+                  {user.avatar_url && (user.avatar_url.startsWith('http') || user.avatar_url.startsWith('data:image')) ? (
+                    <img src={user.avatar_url} alt={user.username} className="w-full h-full object-cover" />
+                  ) : user.avatar_url ? (
+                    <span className="text-sm leading-none">{user.avatar_url}</span>
+                  ) : user.username ? (
+                    user.username.charAt(0)
+                  ) : (
+                    <User className="w-3.5 h-3.5"/>
+                  )}
                 </span>
                 <span className="hidden md:inline max-w-[110px] truncate">{user.username}</span>
               </button>

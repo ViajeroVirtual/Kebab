@@ -101,10 +101,16 @@ export default function KebabCard({ kebab, rank, onClick, onRateClick, currentUs
                     className="inline-flex items-center gap-1.5 pl-1 pr-2.5 py-0.5 rounded-full bg-surface text-xs border border-neutral-200/60"
                   >
                     <span
-                      className="w-4 h-4 rounded-full flex items-center justify-center text-xs font-bold text-white uppercase shrink-0"
+                      className="w-4 h-4 rounded-full flex items-center justify-center text-[10px] font-bold text-white uppercase shrink-0 overflow-hidden"
                       style={{ backgroundColor: r.avatar_color || '#DC2626' }}
                     >
-                      {r.username ? r.username.slice(0, 1) : '?'}
+                      {r.avatar_url && (r.avatar_url.startsWith('http') || r.avatar_url.startsWith('data:image')) ? (
+                        <img src={r.avatar_url} alt={r.username} className="w-full h-full object-cover" />
+                      ) : r.avatar_url ? (
+                        <span className="text-[10px] leading-none">{r.avatar_url}</span>
+                      ) : (
+                        r.username ? r.username.slice(0, 1) : '?'
+                      )}
                     </span>
                     <span className="text-ink font-medium truncate max-w-[75px]">{r.username}</span>
                     <span className="font-bold text-ink tabular-nums">
