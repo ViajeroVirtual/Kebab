@@ -47,11 +47,13 @@ app.get('*', (req, res) => {
 });
 
 // Arrancar servidor e inicializar DB + Bot Keep-Alive
+const HOST = process.env.IP || (process.env.NODE_ENV === 'production' ? '::' : '0.0.0.0');
+
 initDb().then(() => {
-  app.listen(PORT, '0.0.0.0', () => {
+  app.listen(PORT, HOST, () => {
     console.log(`===============================================`);
-    console.log(`🥙 Servidor AlgeKebab escuchando en puerto ${PORT}`);
-    console.log(`🚀 Listo para Render o desarrollo local`);
+    console.log(`🥙 Servidor AlgeKebab escuchando en ${HOST}:${PORT}`);
+    console.log(`🚀 Listo para Alwaysdata, Render o desarrollo local`);
     console.log(`===============================================`);
 
     // Iniciar bot de películas invisible para mantener activo Supabase
